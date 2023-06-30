@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1528C00C2A4E6CC000F060CC /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1528C00B2A4E6CC000F060CC /* TabBarController.swift */; };
 		1586AB8D2A4E114900216FA6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1586AB8C2A4E114900216FA6 /* AppDelegate.swift */; };
 		1586AB8F2A4E114900216FA6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1586AB8E2A4E114900216FA6 /* SceneDelegate.swift */; };
 		1586AB912A4E114900216FA6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1586AB902A4E114900216FA6 /* ViewController.swift */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1528C00B2A4E6CC000F060CC /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		1586AB892A4E114900216FA6 /* iOSSeriesChallenge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSSeriesChallenge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1586AB8C2A4E114900216FA6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1586AB8E2A4E114900216FA6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -76,6 +78,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1528C00D2A4E6D1400F060CC /* TabBar */ = {
+			isa = PBXGroup;
+			children = (
+				1528C00B2A4E6CC000F060CC /* TabBarController.swift */,
+			);
+			path = TabBar;
+			sourceTree = "<group>";
+		};
 		1586AB802A4E114900216FA6 = {
 			isa = PBXGroup;
 			children = (
@@ -137,6 +147,7 @@
 		1586ABBD2A4E187F00216FA6 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				1528C00D2A4E6D1400F060CC /* TabBar */,
 				1586AB8C2A4E114900216FA6 /* AppDelegate.swift */,
 				1586AB8E2A4E114900216FA6 /* SceneDelegate.swift */,
 			);
@@ -283,6 +294,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1586AB912A4E114900216FA6 /* ViewController.swift in Sources */,
+				1528C00C2A4E6CC000F060CC /* TabBarController.swift in Sources */,
 				1586AB8D2A4E114900216FA6 /* AppDelegate.swift in Sources */,
 				1586AB8F2A4E114900216FA6 /* SceneDelegate.swift in Sources */,
 			);
