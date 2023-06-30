@@ -15,11 +15,11 @@ class CustomTabBarController: UITabBarController {
     }
     
     func setupTabBar() {
-        let movieListViewController = MovieListViewController()
+        let seriesListViewController = SeriesListFactory.make()
         
-        let movieListNavigationController = setupNavigationController(image: UIImage(systemName: "popcorn.fill"), viewController: movieListViewController)
+        let seriesListNavigationController = setupNavigationController(image: UIImage(systemName: "popcorn.fill"), viewController: seriesListViewController)
         
-        viewControllers = [movieListNavigationController]
+        viewControllers = [seriesListNavigationController]
     }
     
     func setupNavigationController(image: UIImage?, viewController: UIViewController) -> UINavigationController {

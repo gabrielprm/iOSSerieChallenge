@@ -7,10 +7,10 @@
 
 import UIKit
 
-class MovieListCollectionViewCell: UICollectionViewCell {
-    static let identifier = "MovieListCollectionViewCell"
+class SeriesListCollectionViewCell: UICollectionViewCell {
+    static let identifier = "SeriesListCollectionViewCell"
     
-    lazy var movieBackgroundImage: UIImageView = {
+    lazy var seriesBackgroundImage: UIImageView = {
         var imageView = UIImageView()
         imageView.image = UIImage(named: "imagePlaceholder")
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -19,10 +19,12 @@ class MovieListCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    lazy var movieTitle: UILabel = {
+    lazy var seriesTitle: UILabel = {
         let label = UILabel()
         label.text = "Placeholder"
         label.font = .boldSystemFont(ofSize: 14)
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -41,21 +43,23 @@ class MovieListCollectionViewCell: UICollectionViewCell {
     }
     
     func configureViews() {
-        contentView.addSubview(movieBackgroundImage)
-        contentView.addSubview(movieTitle)
+        contentView.addSubview(seriesBackgroundImage)
+        contentView.addSubview(seriesTitle)
         
         setupContraints()
     }
     
     func setupContraints() {
         NSLayoutConstraint.activate([
-            movieBackgroundImage.topAnchor.constraint(equalTo: contentView.topAnchor),
-            movieBackgroundImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            movieBackgroundImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -50),
-            movieBackgroundImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            seriesBackgroundImage.topAnchor.constraint(equalTo: contentView.topAnchor),
+            seriesBackgroundImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            seriesBackgroundImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -50),
+            seriesBackgroundImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
-            movieTitle.topAnchor.constraint(equalTo: movieBackgroundImage.bottomAnchor, constant: 10),
-            movieTitle.leadingAnchor.constraint(equalTo: movieBackgroundImage.leadingAnchor),
+            seriesTitle.topAnchor.constraint(equalTo: seriesBackgroundImage.bottomAnchor, constant: 10),
+            seriesTitle.leadingAnchor.constraint(equalTo: seriesBackgroundImage.leadingAnchor),
+            seriesTitle.trailingAnchor.constraint(equalTo: seriesBackgroundImage.trailingAnchor, constant: -5)
+//            seriesTitle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
     
@@ -65,7 +69,7 @@ class MovieListCollectionViewCell: UICollectionViewCell {
             let image = image
         else { return }
                 
-        movieTitle.text = title
-        movieBackgroundImage.image = image
+        seriesTitle.text = title
+        seriesBackgroundImage.image = image
     }
 }
