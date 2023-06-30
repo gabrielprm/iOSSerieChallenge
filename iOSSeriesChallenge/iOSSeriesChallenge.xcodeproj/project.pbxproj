@@ -141,6 +141,13 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
+		1528C02A2A4F8AD800F060CC /* SearchSerieScene */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = SearchSerieScene;
+			sourceTree = "<group>";
+		};
 		1586AB802A4E114900216FA6 = {
 			isa = PBXGroup;
 			children = (
@@ -213,6 +220,7 @@
 		1586ABBE2A4E18BD00216FA6 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				1528C02A2A4F8AD800F060CC /* SearchSerieScene */,
 				1528C0102A4E729400F060CC /* SeriesListScene */,
 			);
 			path = Scenes;

@@ -16,8 +16,6 @@ protocol SeriesListPresenterProtocol {
 class SeriesListPresenter: SeriesListPresenterProtocol {
     let service: SeriesListServiceProtocol
     
-//    let imageCache = [NSCache<NSString, UIImage>]()
-    
     weak var viewController: SeriesListPresenterView?
     
     init(service: SeriesListServiceProtocol) {

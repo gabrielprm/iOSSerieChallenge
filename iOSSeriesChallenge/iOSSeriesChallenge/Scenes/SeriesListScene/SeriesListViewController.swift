@@ -49,10 +49,13 @@ class SeriesListViewController: UIViewController,  UICollectionViewDataSource, U
         title = "Series List"
         
         configureViews()
-        presenter.fetchSeries()
+        setupContraints()
         
         collectionView.dataSource = self
         collectionView.delegate = self
+        
+        presenter.fetchSeries()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -64,7 +67,9 @@ class SeriesListViewController: UIViewController,  UICollectionViewDataSource, U
     }
     
     func setupContraints() {
-        
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 300)
+        ])
     }
 
     // MARK: - UICollectionViewDataSource

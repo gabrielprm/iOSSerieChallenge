@@ -59,7 +59,6 @@ class SeriesListCollectionViewCell: UICollectionViewCell {
             seriesTitle.topAnchor.constraint(equalTo: seriesBackgroundImage.bottomAnchor, constant: 10),
             seriesTitle.leadingAnchor.constraint(equalTo: seriesBackgroundImage.leadingAnchor),
             seriesTitle.trailingAnchor.constraint(equalTo: seriesBackgroundImage.trailingAnchor, constant: -5)
-//            seriesTitle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
     
