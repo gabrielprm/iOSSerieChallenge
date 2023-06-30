@@ -15,7 +15,7 @@ class CustomTabBarController: UITabBarController {
     }
     
     func setupTabBar() {
-        let movieListViewController = ViewController()
+        let movieListViewController = MovieListViewController()
         
         let movieListNavigationController = setupNavigationController(image: UIImage(systemName: "popcorn.fill"), viewController: movieListViewController)
         
