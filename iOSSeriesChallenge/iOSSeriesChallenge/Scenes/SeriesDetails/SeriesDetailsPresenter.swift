@@ -14,6 +14,7 @@ protocol SeriesDetailsPresenting {
     func fetchEpisodes(seasonID: Int)
     func downloadImage(url: String, completion: @escaping (UIImage?) -> Void)
     func removePTagsAndBoldTags(from htmlString: String) -> String
+    func presentSeasonsSelectionView(seasons: [SerieSeason], delegate: SeasonSelectionDelegate)
 }
 
 class SeriesDetailsPresenter: SeriesDetailsPresenting {
@@ -87,7 +88,6 @@ class SeriesDetailsPresenter: SeriesDetailsPresenting {
     }
     
     func fetchEpisodes(seasonID: Int) {
-        print("Season: \(seasonID)")
         service.fetchAllEpisodesFromSeason(id: seasonID) { [weak self] result in
             switch result {
             case .success(let model):
@@ -96,5 +96,9 @@ class SeriesDetailsPresenter: SeriesDetailsPresenting {
                 print(error)
             }
         }
+    }
+    
+    func presentSeasonsSelectionView(seasons: [SerieSeason], delegate: SeasonSelectionDelegate) {
+        coordinator.presentSeasonsSelectionView(seasons: seasons, delegate: delegate)
     }
 }

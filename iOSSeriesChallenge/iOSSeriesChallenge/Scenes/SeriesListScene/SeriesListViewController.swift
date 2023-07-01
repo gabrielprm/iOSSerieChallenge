@@ -45,7 +45,7 @@ class SeriesListViewController: UIViewController {
         collectionView.delegate = self
         
         presenter.fetchSeries()
-        
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -76,13 +76,14 @@ class SeriesDetailsViewController: UIViewController {
     lazy var seasonButton: UIButton = {
         let button = UIButton(type: .system)
         let icon = UIImage(systemName: "chevron.down")
+        button.setTitle("asdfa", for: .normal)
         button.tintColor = .blue
         button.setImage(icon, for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
         button.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
         button.titleLabel?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
         button.imageView?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
-        button.addTarget(self, action: #selector(selectSeason), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapChangeSeason), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -108,14 +109,11 @@ class SeriesDetailsViewController: UIViewController {
         super.viewDidLoad()
         configureViews()
         setupConstraints()
+        presenter.fetchSeasons()
+        presenter.fetchSerieDetails()
         tableView.dataSource = self
         tableView.delegate = self
         view.backgroundColor = .darkGray
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        presenter.fetchSerieDetails()
-        presenter.fetchSeasons()
     }
     
     func configureViews() {
@@ -181,12 +179,8 @@ class SeriesDetailsViewController: UIViewController {
         seeLessButton.isHidden = true
     }
     
-    @objc func selectSeason() {
-        let bottomSheetVC = BottomSheetViewController()
-        bottomSheetVC.modalPresentationStyle = .overCurrentContext
-//        bottomSheetVC.transitioningDelegate = self
-        present(bottomSheetVC, animated: true, completion: nil)
-
+    @objc func didTapChangeSeason() {
+        presenter.presentSeasonsSelectionView(seasons: seasons, delegate: self)
     }
     
     func updateContentLabel(with text: String) {
@@ -210,6 +204,12 @@ class SeriesDetailsViewController: UIViewController {
         let clippedWords = Array(words.prefix(wordCount))
         return clippedWords.joined(separator: " ")
     }
+    
+    func updateButtonTitle(season: Int) {
+        DispatchQueue.main.async { [weak self] in
+            self?.seasonButton.setTitle("Season \(season)", for: .normal)
+        }
+    }
 }
 
 extension SeriesDetailsViewController: SeriesDetailsDisplaying {
@@ -225,9 +225,7 @@ extension SeriesDetailsViewController: SeriesDetailsDisplaying {
     func presentAllSeasons(model: [SerieSeason]) {
         self.seasons = model
         self.selectedSeason = model[0].id
-        DispatchQueue.main.async { [weak self] in
-            self?.seasonButton.setTitle("Season \(model[0].number)", for: .normal)
-        }
+        updateButtonTitle(season: model[0].number)
         presenter.fetchEpisodes(seasonID: selectedSeason)
     }
     
@@ -240,7 +238,6 @@ extension SeriesDetailsViewController: SeriesDetailsDisplaying {
 }
 
 extension SeriesDetailsViewController: UITableViewDelegate, UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         episodes.count
     }
@@ -263,5 +260,14 @@ extension SeriesDetailsViewController: UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 90
+    }
+}
+
+
+extension SeriesDetailsViewController: SeasonSelectionDelegate {
+    func selectSeason(season: SerieSeason) {
+        selectedSeason = season.id
+        updateButtonTitle(season: season.number)
+        presenter.fetchEpisodes(seasonID: season.id)
     }
 }
