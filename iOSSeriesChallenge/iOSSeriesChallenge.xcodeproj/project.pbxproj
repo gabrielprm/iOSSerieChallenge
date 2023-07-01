@@ -33,6 +33,9 @@
 		1586ABA42A4E114B00216FA6 /* iOSSeriesChallengeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1586ABA32A4E114B00216FA6 /* iOSSeriesChallengeTests.swift */; };
 		1586ABAE2A4E114B00216FA6 /* iOSSeriesChallengeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1586ABAD2A4E114B00216FA6 /* iOSSeriesChallengeUITests.swift */; };
 		1586ABB02A4E114B00216FA6 /* iOSSeriesChallengeUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1586ABAF2A4E114B00216FA6 /* iOSSeriesChallengeUITestsLaunchTests.swift */; };
+		15CED0BB2A507E9E0031C89A /* ServiceCommons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CED0BA2A507E9E0031C89A /* ServiceCommons.swift */; };
+		15CED0C02A508D590031C89A /* EpisodesListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CED0BF2A508D590031C89A /* EpisodesListTableViewCell.swift */; };
+		15CED0C22A50D2D80031C89A /* SeasonSelectionBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CED0C12A50D2D80031C89A /* SeasonSelectionBottomSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +86,9 @@
 		1586ABA92A4E114B00216FA6 /* iOSSeriesChallengeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSSeriesChallengeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1586ABAD2A4E114B00216FA6 /* iOSSeriesChallengeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSSeriesChallengeUITests.swift; sourceTree = "<group>"; };
 		1586ABAF2A4E114B00216FA6 /* iOSSeriesChallengeUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSSeriesChallengeUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		15CED0BA2A507E9E0031C89A /* ServiceCommons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCommons.swift; sourceTree = "<group>"; };
+		15CED0BF2A508D590031C89A /* EpisodesListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesListTableViewCell.swift; sourceTree = "<group>"; };
+		15CED0C12A50D2D80031C89A /* SeasonSelectionBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonSelectionBottomSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +153,7 @@
 				1528C0262A4F731D00F060CC /* ServiceSeriesListErrors.swift */,
 				1528C0232A4F728F00F060CC /* URLSession+Extension.swift */,
 				1528C03A2A4F97A800F060CC /* SessionRequestProtocol.swift */,
+				15CED0BA2A507E9E0031C89A /* ServiceCommons.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -162,6 +169,7 @@
 		1528C02D2A4F92D300F060CC /* SeriesDetails */ = {
 			isa = PBXGroup;
 			children = (
+				15CED0BC2A508AD90031C89A /* View */,
 				1528C02E2A4F932A00F060CC /* SeriesDetailsViewController.swift */,
 				1528C0302A4F933900F060CC /* SeriesDetailsFactory.swift */,
 				1528C0322A4F935000F060CC /* SeriesDetailsPresenter.swift */,
@@ -248,6 +256,15 @@
 				1528C0102A4E729400F060CC /* SeriesListScene */,
 			);
 			path = Scenes;
+			sourceTree = "<group>";
+		};
+		15CED0BC2A508AD90031C89A /* View */ = {
+			isa = PBXGroup;
+			children = (
+				15CED0BF2A508D590031C89A /* EpisodesListTableViewCell.swift */,
+				15CED0C12A50D2D80031C89A /* SeasonSelectionBottomSheet.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -390,6 +407,8 @@
 				1528C01B2A4E76BC00F060CC /* TwoColumnFlowLayout.swift in Sources */,
 				1528C0162A4E730600F060CC /* SeriesListService.swift in Sources */,
 				1528C0352A4F936600F060CC /* SeriesDetailsService.swift in Sources */,
+				15CED0C02A508D590031C89A /* EpisodesListTableViewCell.swift in Sources */,
+				15CED0C22A50D2D80031C89A /* SeasonSelectionBottomSheet.swift in Sources */,
 				1528C03D2A4F9A7600F060CC /* SeriesDetailsModel.swift in Sources */,
 				1528C0312A4F933900F060CC /* SeriesDetailsFactory.swift in Sources */,
 				1528C03B2A4F97A800F060CC /* SessionRequestProtocol.swift in Sources */,
@@ -400,6 +419,7 @@
 				1528C01D2A4E7B0F00F060CC /* SeriesListCollectionViewCell.swift in Sources */,
 				1528C0292A4F7B4C00F060CC /* SeriesListFactory.swift in Sources */,
 				1528C0122A4E72CD00F060CC /* SeriesListViewController.swift in Sources */,
+				15CED0BB2A507E9E0031C89A /* ServiceCommons.swift in Sources */,
 				1528C0142A4E72DD00F060CC /* SeriesListPresenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

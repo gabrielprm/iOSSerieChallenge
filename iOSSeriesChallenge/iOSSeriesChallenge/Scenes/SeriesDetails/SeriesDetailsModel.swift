@@ -27,3 +27,16 @@ struct SerieEpisodes: Codable {
     let summary: String
     let image: ShowImage
 }
+
+struct SerieSeason: Codable {
+    let id: Int
+    let number: Int
+}
+
+struct Episode: Codable {
+    let name: String
+    let number: Int
+    let summary: String?
+    let season: Int
+    let image: ShowImage?
+}

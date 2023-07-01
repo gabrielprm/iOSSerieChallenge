@@ -10,7 +10,7 @@ import UIKit
 
 protocol SeriesListPresenting {
     func fetchSeries()
-    func downloadImage(url: String, completion: @escaping (UIImage?) -> Void)
+    func downloadImage(url: String?, completion: @escaping (UIImage?) -> Void)
     func navigateToDetailsPage(id: Int)
 }
 
@@ -29,9 +29,10 @@ class SeriesListPresenter: SeriesListPresenting {
             switch result {
             case .success(let model):
                 model.forEach { [weak self] serie in
-                    self?.downloadImage(url:  serie.show.image.imageUrl, completion: { image in
+                    self?.downloadImage(url:  serie._embedded.show.image?
+                        .imageUrl, completion: { image in
                         if let image = image {
-                            self?.viewController?.displaySeries(id: serie.show.id,name: serie.show.name, image: image)
+                            self?.viewController?.displaySeries(id: serie._embedded.show.id,name: serie._embedded.show.name, image: image)
                         } else {
                             return
                         }
@@ -43,8 +44,8 @@ class SeriesListPresenter: SeriesListPresenting {
         }
     }
     
-    func downloadImage(url: String, completion: @escaping (UIImage?) -> Void){
-        guard let imageURL = URL(string: url) else {
+    func downloadImage(url: String?, completion: @escaping (UIImage?) -> Void) {
+        guard let imageURL = URL(string: url ?? "") else {
             completion(nil)
             return
         }

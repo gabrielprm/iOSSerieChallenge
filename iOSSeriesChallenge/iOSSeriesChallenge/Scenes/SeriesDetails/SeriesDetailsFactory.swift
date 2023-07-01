@@ -15,6 +15,8 @@ enum SeriesDetailsFactory {
         let presenter = SeriesDetailsPresenter(id: id, service: service, coordinator: coordinator)
         let viewController = SeriesDetailsViewController(presenter: presenter)
         
+        viewController.hidesBottomBarWhenPushed = true
+        
         presenter.viewController = viewController
         coordinator.viewController = viewController
         

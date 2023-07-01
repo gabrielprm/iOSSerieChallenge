@@ -24,7 +24,7 @@ class SeriesListService: SeriesListServicing {
     
     func fetchAllSeries(completion: @escaping fetchSeriesCompletionHandler) {
         
-        let tvMazeUrl = "https://api.tvmaze.com/schedule"
+        let tvMazeUrl = "https://api.tvmaze.com/schedule/full"
         
         guard let url = URL(string: tvMazeUrl) else {
             completion(.failure(ServiceSeriesListErrors.urlNil))

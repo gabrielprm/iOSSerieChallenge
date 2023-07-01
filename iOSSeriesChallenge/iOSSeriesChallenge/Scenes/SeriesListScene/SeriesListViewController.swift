@@ -11,16 +11,7 @@ protocol SeriesListDisplaying: AnyObject {
     func displaySeries(id: Int, name: String, image: UIImage?)
 }
 
-extension SeriesListViewController.Layout {
-    enum Spacing {
-        static let collectionViewLeadingTrailing: CGFloat = 10
-    }
-}
-
-class SeriesListViewController: UIViewController,  UICollectionViewDataSource, UICollectionViewDelegate {
-    
-    fileprivate enum Layout { }
-    
+class SeriesListViewController: UIViewController {
     var serieList: [(Int, String, UIImage?)] = []
     
     let layout = TwoColumnFlowLayout()
@@ -29,7 +20,7 @@ class SeriesListViewController: UIViewController,  UICollectionViewDataSource, U
     
     lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
-        collectionView.register(SeriesListCollectionViewCell.self, forCellWithReuseIdentifier: "SeriesListCollectionViewCell")
+        collectionView.register(SeriesListCollectionViewCell.self, forCellWithReuseIdentifier: SeriesListCollectionViewCell.identifier)
         collectionView.backgroundColor = .white
         return collectionView
     }()
@@ -69,23 +60,6 @@ class SeriesListViewController: UIViewController,  UICollectionViewDataSource, U
     func configureViews() {
         view.addSubview(collectionView)
     }
-
-    // MARK: - UICollectionViewDataSource
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return serieList.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SeriesListCollectionViewCell", for: indexPath) as! SeriesListCollectionViewCell
-        cell.setupCell(title: serieList[indexPath.item].1, image: serieList[indexPath.item].2 ?? UIImage(named: "imagePlaceholder2"))
-
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        presenter.navigateToDetailsPage(id: serieList[indexPath.item].0)
-        collectionView.deselectItem(at: indexPath, animated: true)
-    }
 }
 
 extension SeriesListViewController: SeriesListDisplaying {
@@ -94,5 +68,24 @@ extension SeriesListViewController: SeriesListDisplaying {
         DispatchQueue.main.async { [weak self] in
             self?.collectionView.reloadData()
         }
+    }
+}
+
+extension SeriesListViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    // MARK: - UICollectionViewDataSource
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return serieList.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SeriesListCollectionViewCell.identifier, for: indexPath) as! SeriesListCollectionViewCell
+        cell.setupCell(title: serieList[indexPath.item].1, image: serieList[indexPath.item].2 ?? UIImage(named: "imagePlaceholder2"))
+
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        presenter.navigateToDetailsPage(id: serieList[indexPath.item].0)
+        collectionView.deselectItem(at: indexPath, animated: true)
     }
 }
