@@ -7,28 +7,22 @@
 
 import Foundation
 
-protocol SessionRequest {
-    func dataTask(with request: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTaskProtocol
+protocol SeriesListServicing {
+    typealias fetchSeriesCompletionHandler = (Result<[HomeSeriesListModel], ServiceSeriesListErrors>) -> Void
+    typealias downloadImageCompletionHandler = (Result<Data, ServiceSeriesListErrors>) -> Void
+    
+    func fetchAllSeries(completion: @escaping fetchSeriesCompletionHandler)
+    func downloadImage(from url: URL, completion: @escaping downloadImageCompletionHandler)
 }
 
-protocol URLSessionDataTaskProtocol {
-    func resume()
-}
-
-protocol SeriesListServiceProtocol {
-    typealias completionHandler = (Result<[HomeSeriesListModel], ServiceSeriesListErrors>) -> Void
-    func fetchAllSeries(completion: @escaping completionHandler)
-    func downloadImage(from url: URL, completion: @escaping(Result<Data, ServiceSeriesListErrors>) -> Void)
-}
-
-class SeriesListService: SeriesListServiceProtocol {
+class SeriesListService: SeriesListServicing {
     private let session: SessionRequest
     
     init(session: SessionRequest = URLSession.shared) {
         self.session = session
     }
     
-    func fetchAllSeries(completion: @escaping completionHandler) {
+    func fetchAllSeries(completion: @escaping fetchSeriesCompletionHandler) {
         
         let tvMazeUrl = "https://api.tvmaze.com/schedule"
         
@@ -53,7 +47,7 @@ class SeriesListService: SeriesListServiceProtocol {
         }.resume()
     }
     
-    func downloadImage(from url: URL, completion: @escaping(Result<Data, ServiceSeriesListErrors>) -> Void) {
+    func downloadImage(from url: URL, completion: @escaping downloadImageCompletionHandler) {
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 completion(.failure(ServiceSeriesListErrors.imageDownload))

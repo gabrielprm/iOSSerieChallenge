@@ -12,8 +12,9 @@ struct HomeSeriesListModel: Codable {
 }
 
 struct ShowModel: Codable {
-    let image: ShowImage
+    let id: Int
     let name: String
+    let image: ShowImage
 }
 
 struct ShowImage: Codable {

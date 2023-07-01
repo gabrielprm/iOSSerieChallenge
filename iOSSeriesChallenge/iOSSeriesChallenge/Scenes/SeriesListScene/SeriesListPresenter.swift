@@ -8,18 +8,20 @@
 import Foundation
 import UIKit
 
-protocol SeriesListPresenterProtocol {
+protocol SeriesListPresenting {
     func fetchSeries()
     func downloadImage(url: String, completion: @escaping (UIImage?) -> Void)
+    func navigateToDetailsPage(id: Int)
 }
 
-class SeriesListPresenter: SeriesListPresenterProtocol {
-    let service: SeriesListServiceProtocol
+class SeriesListPresenter: SeriesListPresenting {
+    let service: SeriesListServicing
+    let coordinator: SeriesListCoordinating
+    weak var viewController: SeriesListDisplaying?
     
-    weak var viewController: SeriesListPresenterView?
-    
-    init(service: SeriesListServiceProtocol) {
+    init(service: SeriesListServicing, coordinator: SeriesListCoordinating) {
         self.service = service
+        self.coordinator = coordinator
     }
     
     func fetchSeries() {
@@ -29,7 +31,7 @@ class SeriesListPresenter: SeriesListPresenterProtocol {
                 model.forEach { [weak self] serie in
                     self?.downloadImage(url:  serie.show.image.imageUrl, completion: { image in
                         if let image = image {
-                            self?.viewController?.displaySeries(name: serie.show.name, image: image)
+                            self?.viewController?.displaySeries(id: serie.show.id,name: serie.show.name, image: image)
                         } else {
                             return
                         }
@@ -56,5 +58,9 @@ class SeriesListPresenter: SeriesListPresenterProtocol {
                 completion(nil)
             }
         }
+    }
+    
+    func navigateToDetailsPage(id: Int) {
+        coordinator.openDetailsPage(id: id)
     }
 }

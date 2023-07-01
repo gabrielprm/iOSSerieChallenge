@@ -11,10 +11,12 @@ import UIKit
 enum SeriesListFactory {
     static func make() -> UIViewController {
         let service = SeriesListService()
-        let presenter = SeriesListPresenter(service: service)
+        let coordinator = SeriesListCoordinator()
+        let presenter = SeriesListPresenter(service: service, coordinator: coordinator)
         let viewController = SeriesListViewController(presenter: presenter)
         
         presenter.viewController = viewController
+        coordinator.viewController = viewController
         
         return viewController
     }

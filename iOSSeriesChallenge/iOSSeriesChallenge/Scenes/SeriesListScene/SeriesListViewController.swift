@@ -7,8 +7,8 @@
 
 import UIKit
 
-protocol SeriesListPresenterView: AnyObject {
-    func displaySeries(name: String, image: UIImage?)
+protocol SeriesListDisplaying: AnyObject {
+    func displaySeries(id: Int, name: String, image: UIImage?)
 }
 
 extension SeriesListViewController.Layout {
@@ -21,11 +21,11 @@ class SeriesListViewController: UIViewController,  UICollectionViewDataSource, U
     
     fileprivate enum Layout { }
     
-    var serieList: [(String, UIImage?)] = []
+    var serieList: [(Int, String, UIImage?)] = []
     
     let layout = TwoColumnFlowLayout()
     
-    var presenter: SeriesListPresenterProtocol
+    var presenter: SeriesListPresenting
     
     lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
@@ -34,7 +34,7 @@ class SeriesListViewController: UIViewController,  UICollectionViewDataSource, U
         return collectionView
     }()
     
-    init(presenter: SeriesListPresenterProtocol) {
+    init(presenter: SeriesListPresenting) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -49,7 +49,6 @@ class SeriesListViewController: UIViewController,  UICollectionViewDataSource, U
         title = "Series List"
         
         configureViews()
-        setupContraints()
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -62,32 +61,36 @@ class SeriesListViewController: UIViewController,  UICollectionViewDataSource, U
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        navigationController?.navigationBar.prefersLargeTitles = false
+    }
+
+    
     func configureViews() {
         view.addSubview(collectionView)
-    }
-    
-    func setupContraints() {
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 300)
-        ])
     }
 
     // MARK: - UICollectionViewDataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return serieList.count ?? 0
+        return serieList.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SeriesListCollectionViewCell", for: indexPath) as! SeriesListCollectionViewCell
-        cell.setupCell(title: serieList[indexPath.item].0, image: serieList[indexPath.item].1 ?? UIImage(named: "imagePlaceholder2"))
+        cell.setupCell(title: serieList[indexPath.item].1, image: serieList[indexPath.item].2 ?? UIImage(named: "imagePlaceholder2"))
 
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        presenter.navigateToDetailsPage(id: serieList[indexPath.item].0)
+        collectionView.deselectItem(at: indexPath, animated: true)
+    }
 }
 
-extension SeriesListViewController: SeriesListPresenterView {
-    func displaySeries(name: String, image: UIImage?) {
-        serieList.append((name, image))
+extension SeriesListViewController: SeriesListDisplaying {
+    func displaySeries(id: Int, name: String, image: UIImage?) {
+        serieList.append((id, name, image))
         DispatchQueue.main.async { [weak self] in
             self?.collectionView.reloadData()
         }
