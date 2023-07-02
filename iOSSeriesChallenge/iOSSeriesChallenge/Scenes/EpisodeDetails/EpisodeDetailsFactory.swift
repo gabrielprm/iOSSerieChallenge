@@ -9,8 +9,9 @@ import Foundation
 import UIKit
 
 enum EpisodeDetailsFactory {
-    static func make(episode: Episode) -> UIViewController {
-        let presenter = EpisodeDetailsPresenter(episode: episode)
+    static func make(episode: Episode, serieTitle: String) -> UIViewController {
+        let service = EpisodeDetailsService()
+        let presenter = EpisodeDetailsPresenter(service: service, episode: episode, serieTitle: serieTitle)
         let viewController = EpisodeDetailsViewController(presenter: presenter)
         
         viewController.hidesBottomBarWhenPushed = true

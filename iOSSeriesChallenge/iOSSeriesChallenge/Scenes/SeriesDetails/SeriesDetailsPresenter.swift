@@ -25,6 +25,7 @@ class SeriesDetailsPresenter: SeriesDetailsPresenting {
     weak var viewController: SeriesDetailsDisplaying?
     
     let id: Int
+    var serieTitle: String = ""
     
     init(id: Int, service: SeriesDetailsServicing, coordinator: SeriesDetailsCoordinating) {
         self.service = service
@@ -36,6 +37,7 @@ class SeriesDetailsPresenter: SeriesDetailsPresenting {
         service.fetchSerieDetails(id: id) { [weak self] result in
             switch result {
             case .success(let model):
+                self?.serieTitle = model.name
                 let summary = self?.removePTagsAndBoldTags(from: model.summary)
                 guard let summary = summary else { return }
                 self?.downloadImage(url: model.image.imageUrl) { image in
@@ -104,6 +106,6 @@ class SeriesDetailsPresenter: SeriesDetailsPresenting {
     }
     
     func presentEpisodeDetails(episode: Episode) {
-        coordinator.presentEpisodeDetailsScene(episode: episode)
+        coordinator.presentEpisodeDetailsScene(episode: episode, serieTitle: serieTitle)
     }
 }

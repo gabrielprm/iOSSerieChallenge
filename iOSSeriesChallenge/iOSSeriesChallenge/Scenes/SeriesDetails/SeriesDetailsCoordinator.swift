@@ -9,7 +9,7 @@ import UIKit
 
 protocol SeriesDetailsCoordinating: AnyObject {
     func presentSeasonsSelectionView(seasons: [SerieSeason], delegate: SeasonSelectionDelegate)
-    func presentEpisodeDetailsScene(episode: Episode)
+    func presentEpisodeDetailsScene(episode: Episode, serieTitle: String)
 }
 
 final class SeriesDetailsCoordinator: SeriesDetailsCoordinating {
@@ -21,8 +21,8 @@ final class SeriesDetailsCoordinator: SeriesDetailsCoordinating {
         viewController?.navigationController?.pushViewController(seasonSelectionVC, animated: true)
     }
     
-    func presentEpisodeDetailsScene(episode: Episode) {
-        let episodeDetailsVC = EpisodeDetailsFactory.make(episode: episode)
+    func presentEpisodeDetailsScene(episode: Episode, serieTitle: String) {
+        let episodeDetailsVC = EpisodeDetailsFactory.make(episode: episode, serieTitle: serieTitle)
         viewController?.navigationController?.pushViewController(episodeDetailsVC, animated: true)
     }
 }
