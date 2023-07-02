@@ -63,12 +63,14 @@ class SeriesListCollectionViewCell: UICollectionViewCell {
     }
     
     func setupCell(title: String?, image: UIImage?) {
-        guard
-            let title = title,
-            let image = image
-        else { return }
-                
-        seriesTitle.text = title
-        seriesBackgroundImage.image = image
+        DispatchQueue.main.async { [weak self] in
+            if let title = title {
+                self?.seriesTitle.text = title
+            }
+             
+            if let image = image {
+                self?.seriesBackgroundImage.image = image
+            }
+        }
     }
 }

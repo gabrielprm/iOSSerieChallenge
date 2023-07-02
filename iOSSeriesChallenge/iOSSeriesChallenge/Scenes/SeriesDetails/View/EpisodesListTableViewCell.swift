@@ -59,7 +59,9 @@ class EpisodesListTableViewCell: UITableViewCell {
     }
     
     func setupCell(icon: UIImage, episodeName: String) {
-        self.iconView.image = icon
-        self.episodeNameLabel.text = episodeName
+        DispatchQueue.main.async {
+            self.iconView.image = icon
+            self.episodeNameLabel.text = episodeName
+        }
     }
 }

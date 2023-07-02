@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct HomeSeriesListModel: Codable {
     let _embedded: EmbeddedShow
@@ -23,7 +24,7 @@ struct ShowModel: Codable {
 
 struct ShowImage: Codable {
     let imageUrl: String
-    
+
     enum CodingKeys: String, CodingKey {
         case imageUrl = "medium"
     }

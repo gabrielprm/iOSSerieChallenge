@@ -10,8 +10,11 @@ import UIKit
 
 protocol SeriesListPresenting {
     func fetchSeries()
+    func searchSerie(query: String)
+    func updateSeriesData()
     func downloadImage(url: String?, completion: @escaping (UIImage?) -> Void)
     func navigateToDetailsPage(id: Int)
+    
 }
 
 class SeriesListPresenter: SeriesListPresenting {
@@ -19,29 +22,71 @@ class SeriesListPresenter: SeriesListPresenting {
     let coordinator: SeriesListCoordinating
     weak var viewController: SeriesListDisplaying?
     
+    var allSeriesModel: [EmbeddedShow] = []
+    var currentDataIndex = 0
+    
     init(service: SeriesListServicing, coordinator: SeriesListCoordinating) {
         self.service = service
         self.coordinator = coordinator
     }
     
     func fetchSeries() {
-        service.fetchAllSeries { result in
+        currentDataIndex = 0
+        viewController?.showLoader()
+        service.fetchAllSeries { [weak self] result in
+            DispatchQueue.main.async {
+                self?.viewController?.hideLoader()
+            }
             switch result {
             case .success(let model):
-                model.forEach { [weak self] serie in
-                    self?.downloadImage(url:  serie._embedded.show.image?
-                        .imageUrl, completion: { image in
-                        if let image = image {
-                            self?.viewController?.displaySeries(id: serie._embedded.show.id,name: serie._embedded.show.name, image: image)
-                        } else {
-                            return
-                        }
-                    })
+                model.forEach { serie in
+                    self?.allSeriesModel.append(serie._embedded)
                 }
+                self?.updateSeriesData()
             case .failure(_):
                 break
             }
         }
+    }
+    
+    func updateSeriesData() {
+        currentDataIndex += 1
+        let splitedDataSet = setDataToDisplay(fullData: allSeriesModel)
+            viewController?.displaySeries(series: splitedDataSet)
+    }
+    
+    func searchSerie(query: String) {
+        currentDataIndex = 0
+        viewController?.showLoader()
+        service.searchSeries(query: query) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.viewController?.hideLoader()
+            }
+
+            switch result {
+            case .success(let model):
+                self?.allSeriesModel = model
+                self?.updateSeriesData()
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func setDataToDisplay(fullData: [EmbeddedShow]) -> [EmbeddedShow] {
+        if fullData.count <= 20 {
+            return fullData
+        }
+        
+        let setSize = 20
+        let numberOfSets = Int(ceil(Double(fullData.count) / Double(setSize)))
+        
+        let startIndex = currentDataIndex * setSize
+        let endIndex = min(startIndex + setSize, fullData.count)
+
+        let currentDataSet = fullData[startIndex..<endIndex]
+        
+        return Array(currentDataSet)
     }
     
     func downloadImage(url: String?, completion: @escaping (UIImage?) -> Void) {
@@ -60,6 +105,7 @@ class SeriesListPresenter: SeriesListPresenting {
             }
         }
     }
+   
     
     func navigateToDetailsPage(id: Int) {
         coordinator.openDetailsPage(id: id)

@@ -245,24 +245,17 @@ extension SeriesDetailsViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: EpisodesListTableViewCell.identifier, for: indexPath) as! EpisodesListTableViewCell
         
+        cell.setupCell(icon: UIImage(named: "imagePlaceholder")!, episodeName: episodes[indexPath.row].name)
+        
         presenter.downloadImage(url: episodes[indexPath.row].image?.imageUrl ?? "") { [weak self] image in
-            DispatchQueue.main.async {
-                if let image = image {
-                    cell.setupCell(icon: image, episodeName: self?.episodes[indexPath.row].name ?? "")
-                } else {
-                    cell.setupCell(icon: UIImage(named: "imagePlaceholder")!, episodeName: self?.episodes[indexPath.row].name ?? "")
-                }
+            if let image = image {
+                cell.setupCell(icon: image, episodeName: self?.episodes[indexPath.row].name ?? "")
             }
         }
     
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
-    }
 }
-
 
 extension SeriesDetailsViewController: SeasonSelectionDelegate {
     func selectSeason(season: SerieSeason) {
