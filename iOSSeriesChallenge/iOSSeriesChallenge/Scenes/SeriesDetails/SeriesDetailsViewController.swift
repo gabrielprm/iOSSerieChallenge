@@ -255,6 +255,11 @@ extension SeriesDetailsViewController: UITableViewDelegate, UITableViewDataSourc
     
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        presenter.presentEpisodeDetails(episode: episodes[indexPath.row])
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 }
 
 extension SeriesDetailsViewController: SeasonSelectionDelegate {

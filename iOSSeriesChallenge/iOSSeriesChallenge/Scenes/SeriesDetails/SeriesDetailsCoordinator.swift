@@ -9,6 +9,7 @@ import UIKit
 
 protocol SeriesDetailsCoordinating: AnyObject {
     func presentSeasonsSelectionView(seasons: [SerieSeason], delegate: SeasonSelectionDelegate)
+    func presentEpisodeDetailsScene(episode: Episode)
 }
 
 final class SeriesDetailsCoordinator: SeriesDetailsCoordinating {
@@ -18,5 +19,10 @@ final class SeriesDetailsCoordinator: SeriesDetailsCoordinating {
         let seasonSelectionVC = SeasonSelectionFactory.make(seasons: seasons)
         seasonSelectionVC.delegate = delegate
         viewController?.navigationController?.pushViewController(seasonSelectionVC, animated: true)
+    }
+    
+    func presentEpisodeDetailsScene(episode: Episode) {
+        let episodeDetailsVC = EpisodeDetailsFactory.make(episode: episode)
+        viewController?.navigationController?.pushViewController(episodeDetailsVC, animated: true)
     }
 }

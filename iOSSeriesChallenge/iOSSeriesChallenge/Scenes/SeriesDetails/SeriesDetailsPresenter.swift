@@ -15,6 +15,7 @@ protocol SeriesDetailsPresenting {
     func downloadImage(url: String, completion: @escaping (UIImage?) -> Void)
     func removePTagsAndBoldTags(from htmlString: String) -> String
     func presentSeasonsSelectionView(seasons: [SerieSeason], delegate: SeasonSelectionDelegate)
+    func presentEpisodeDetails(episode: Episode)
 }
 
 class SeriesDetailsPresenter: SeriesDetailsPresenting {
@@ -100,5 +101,9 @@ class SeriesDetailsPresenter: SeriesDetailsPresenting {
     
     func presentSeasonsSelectionView(seasons: [SerieSeason], delegate: SeasonSelectionDelegate) {
         coordinator.presentSeasonsSelectionView(seasons: seasons, delegate: delegate)
+    }
+    
+    func presentEpisodeDetails(episode: Episode) {
+        coordinator.presentEpisodeDetailsScene(episode: episode)
     }
 }
