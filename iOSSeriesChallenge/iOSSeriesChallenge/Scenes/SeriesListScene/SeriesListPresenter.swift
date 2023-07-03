@@ -14,7 +14,7 @@ protocol SeriesListPresenting {
     func updateSeriesData()
     func downloadImage(url: String?, completion: @escaping (UIImage?) -> Void)
     func navigateToDetailsPage(id: Int)
-    
+    func setDataToDisplay(fullData: [EmbeddedShow]) -> [EmbeddedShow]
 }
 
 class SeriesListPresenter: SeriesListPresenting {
@@ -34,15 +34,14 @@ class SeriesListPresenter: SeriesListPresenting {
         currentDataIndex = 0
         viewController?.showLoader()
         service.fetchAllSeries { [weak self] result in
-            DispatchQueue.main.async {
-                self?.viewController?.hideLoader()
-            }
+            guard let self = self else { return }
+            self.viewController?.hideLoader()
             switch result {
             case .success(let model):
                 model.forEach { serie in
-                    self?.allSeriesModel.append(serie._embedded)
+                    self.allSeriesModel.append(serie._embedded)
                 }
-                self?.updateSeriesData()
+                self.updateSeriesData()
             case .failure(_):
                 break
             }
@@ -52,21 +51,19 @@ class SeriesListPresenter: SeriesListPresenting {
     func updateSeriesData() {
         currentDataIndex += 1
         let splitedDataSet = setDataToDisplay(fullData: allSeriesModel)
-            viewController?.displaySeries(series: splitedDataSet)
+        viewController?.displaySeries(series: splitedDataSet)
     }
     
     func searchSerie(query: String) {
         currentDataIndex = 0
         viewController?.showLoader()
         service.searchSeries(query: query) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.viewController?.hideLoader()
-            }
-
+            guard let self = self else { return }
+            self.viewController?.hideLoader()
             switch result {
             case .success(let model):
-                self?.allSeriesModel = model
-                self?.updateSeriesData()
+                self.allSeriesModel = model
+                self.updateSeriesData()
             case .failure(let error):
                 print(error)
             }

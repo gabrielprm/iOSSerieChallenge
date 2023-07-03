@@ -41,7 +41,7 @@ class EpisodesListTableViewCell: UITableViewCell {
     func configureViews() {
         contentView.addSubview(iconView)
         contentView.addSubview(episodeNameLabel)
-        contentView.backgroundColor = .darkGray
+        contentView.backgroundColor = UIColor(named: "DarkBlue")
     }
     
     func setupConstraints() {

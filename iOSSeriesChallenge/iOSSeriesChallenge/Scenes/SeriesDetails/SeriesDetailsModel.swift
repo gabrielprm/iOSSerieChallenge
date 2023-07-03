@@ -12,7 +12,7 @@ struct SerieDetails: Codable {
     let schedule: SerieSchedule
     let image: ShowImage
     let genres: [String]
-    let summary: String
+    let summary: String?
 }
 
 struct SerieSchedule: Codable {

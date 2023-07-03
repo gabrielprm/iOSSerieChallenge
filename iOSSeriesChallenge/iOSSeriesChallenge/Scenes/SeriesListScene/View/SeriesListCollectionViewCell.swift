@@ -21,7 +21,6 @@ class SeriesListCollectionViewCell: UICollectionViewCell {
     
     lazy var seriesTitle: UILabel = {
         let label = UILabel()
-        label.text = "Placeholder"
         label.font = .boldSystemFont(ofSize: 14)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0

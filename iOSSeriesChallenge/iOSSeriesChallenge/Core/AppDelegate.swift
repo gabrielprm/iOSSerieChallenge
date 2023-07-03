@@ -17,6 +17,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var supportedInterfaceOrientations: UIInterfaceOrientationMask {
             return .portrait
         }
+        
+        UINavigationBar.appearance().barTintColor = UIColor(named: "DarkBlue")
+        UINavigationBar.appearance().tintColor = UIColor.white
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        let largeTitleAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.white, // Set your desired color here
+            NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 34) // Set your desired font here
+        ]
+
+        // Apply the attributes to the navigation bar's appearance
+        UINavigationBar.appearance().largeTitleTextAttributes = largeTitleAttributes
+        
         return true
     }
 

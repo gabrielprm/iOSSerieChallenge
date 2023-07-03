@@ -28,7 +28,7 @@ class EpisodeDetailsViewController: UIViewController {
         label.font = .boldSystemFont(ofSize: 28)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
-        label.textColor = .white
+        label.textColor = UIColor(named: "Cream")
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -77,7 +77,7 @@ class EpisodeDetailsViewController: UIViewController {
         configureViews()
         setupConstraints()
         presenter.presentData()
-        view.backgroundColor = .darkGray
+        view.backgroundColor = UIColor(named: "DarkBlue")
     }
     
     func configureViews() {
@@ -107,7 +107,7 @@ class EpisodeDetailsViewController: UIViewController {
             
             episodeSummary.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             episodeSummary.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
-            episodeSummary.topAnchor.constraint(equalTo: episodeNumber.bottomAnchor, constant: 10),
+            episodeSummary.topAnchor.constraint(equalTo: episodeSeason.bottomAnchor, constant: 10),
         ])
     }
 }

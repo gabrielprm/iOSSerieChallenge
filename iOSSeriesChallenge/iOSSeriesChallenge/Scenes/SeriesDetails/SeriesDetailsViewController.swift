@@ -8,9 +8,12 @@
 import UIKit
 
 protocol SeriesDetailsDisplaying: AnyObject {
-    func setHeaderData(image: UIImage, title: String, summary: String)
+    func setHeaderData(image: UIImage, title: String, summary: String, genre: String?)
     func presentAllSeasons(model: [SerieSeason])
     func presentAllEpisodesFromSeason(episodes: [Episode])
+    func setSchedule(schedule: String?)
+    func showLoader()
+    func hideLoader()
 }
 
 class SeriesDetailsViewController: UIViewController {
@@ -24,6 +27,14 @@ class SeriesDetailsViewController: UIViewController {
     var selectedSeason: Int = 0
     var summary: String = ""
     
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.color = .white
+        activityIndicator.center = view.center
+        activityIndicator.hidesWhenStopped = true
+        return activityIndicator
+    }()
+    
     let seriesImage: UIImageView = {
         var imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -35,6 +46,26 @@ class SeriesDetailsViewController: UIViewController {
     lazy var seriesTitle: UILabel = {
         let label = UILabel()
         label.font = .boldSystemFont(ofSize: 28)
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    lazy var seriesGenre: UILabel = {
+        let label = UILabel()
+        label.font = .boldSystemFont(ofSize: 14)
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    lazy var episodeDate: UILabel = {
+        let label = UILabel()
+        label.font = .boldSystemFont(ofSize: 12)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.textColor = .white
@@ -57,7 +88,7 @@ class SeriesDetailsViewController: UIViewController {
     lazy var seeMoreButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("See More", for: .normal)
-        button.tintColor = .red
+        button.tintColor = UIColor(named: "Cream")
         button.addTarget(self, action: #selector(seeMoreButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -66,7 +97,7 @@ class SeriesDetailsViewController: UIViewController {
     lazy var seeLessButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("See Less", for: .normal)
-        button.tintColor = .red
+        button.tintColor = UIColor(named: "Cream")
         button.addTarget(self, action: #selector(seeLessButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isHidden = true
@@ -76,8 +107,7 @@ class SeriesDetailsViewController: UIViewController {
     lazy var seasonButton: UIButton = {
         let button = UIButton(type: .system)
         let icon = UIImage(systemName: "chevron.down")
-        button.setTitle("asdfa", for: .normal)
-        button.tintColor = .blue
+        button.tintColor = UIColor(named: "Cream")
         button.setImage(icon, for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
         button.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
@@ -92,7 +122,7 @@ class SeriesDetailsViewController: UIViewController {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(EpisodesListTableViewCell.self, forCellReuseIdentifier: EpisodesListTableViewCell.identifier)
-        tableView.backgroundColor = UIColor.darkGray
+        tableView.backgroundColor = UIColor(named: "DarkBlue")
         return tableView
     }()
     
@@ -113,7 +143,7 @@ class SeriesDetailsViewController: UIViewController {
         presenter.fetchSerieDetails()
         tableView.dataSource = self
         tableView.delegate = self
-        view.backgroundColor = .darkGray
+        view.backgroundColor = UIColor(named: "DarkBlue")
     }
     
     func configureViews() {
@@ -122,16 +152,19 @@ class SeriesDetailsViewController: UIViewController {
         view.addSubview(seriesSummary)
         view.addSubview(seeMoreButton)
         view.addSubview(seeLessButton)
+        view.addSubview(seriesGenre)
+        view.addSubview(episodeDate)
         view.addSubview(seasonButton)
         view.addSubview(tableView)
+        view.addSubview(activityIndicator)
     }
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
             seriesImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             seriesImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            seriesImage.heightAnchor.constraint(equalToConstant: 150),
-            seriesImage.widthAnchor.constraint(equalToConstant: 102),
+            seriesImage.heightAnchor.constraint(equalToConstant: 180),
+            seriesImage.widthAnchor.constraint(equalToConstant: 122),
             
             seriesTitle.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             seriesTitle.topAnchor.constraint(equalTo: seriesImage.bottomAnchor, constant: 20),
@@ -147,7 +180,13 @@ class SeriesDetailsViewController: UIViewController {
             seeLessButton.topAnchor.constraint(equalTo: seriesSummary.bottomAnchor, constant: 10),
             seeLessButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             
-            seasonButton.topAnchor.constraint(equalTo: seeMoreButton.bottomAnchor, constant: 20),
+            seriesGenre.topAnchor.constraint(equalTo: seeMoreButton.bottomAnchor, constant: 10),
+            seriesGenre.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
+            episodeDate.topAnchor.constraint(equalTo: seriesGenre.bottomAnchor, constant: 10),
+            episodeDate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
+            seasonButton.topAnchor.constraint(equalTo: episodeDate.bottomAnchor, constant: 20),
             seasonButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
         
             tableView.topAnchor.constraint(equalTo: seasonButton.bottomAnchor, constant: 20),
@@ -184,6 +223,13 @@ class SeriesDetailsViewController: UIViewController {
     }
     
     func updateContentLabel(with text: String) {
+        if text.isEmpty {
+            seriesSummary.isHidden = true
+            seeMoreButton.isHidden = true
+            seeLessButton.isHidden = true
+            return
+        }
+        
         let wordCount = text.components(separatedBy: .whitespacesAndNewlines).count
         let clippedText = isSummaryExpanded ? text : clipText(text, to: maxWordCount)
         
@@ -213,12 +259,15 @@ class SeriesDetailsViewController: UIViewController {
 }
 
 extension SeriesDetailsViewController: SeriesDetailsDisplaying {
-    func setHeaderData(image: UIImage, title: String, summary: String) {
+    func setHeaderData(image: UIImage, title: String, summary: String, genre: String?) {
         self.summary = summary
         DispatchQueue.main.async { [weak self] in
             self?.seriesImage.image = image
             self?.seriesTitle.text = title
             self?.updateContentLabel(with: summary)
+            if let genre = genre {
+                self?.seriesGenre.text = genre
+            }
         }
     }
     
@@ -233,6 +282,28 @@ extension SeriesDetailsViewController: SeriesDetailsDisplaying {
         self.episodes = episodes
         DispatchQueue.main.async { [weak self] in
             self?.tableView.reloadData()
+        }
+    }
+    
+    func setSchedule(schedule: String?) {
+        if let schedule = schedule {
+            DispatchQueue.main.async { [weak self] in
+                self?.episodeDate.text = schedule
+            }
+        }
+    }
+    
+    func showLoader() {
+        DispatchQueue.main.async { [weak self] in
+            self?.activityIndicator.startAnimating()
+            self?.view.isUserInteractionEnabled = false
+        }
+    }
+    
+    func hideLoader() {
+        DispatchQueue.main.async { [weak self] in
+            self?.activityIndicator.stopAnimating()
+            self?.view.isUserInteractionEnabled = true        
         }
     }
 }

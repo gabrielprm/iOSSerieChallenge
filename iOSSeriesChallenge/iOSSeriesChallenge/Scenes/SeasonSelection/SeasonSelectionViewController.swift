@@ -19,7 +19,7 @@ class SeasonSelectionViewController: UIViewController {
         let tableView = UITableView(frame: view.bounds)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        tableView.backgroundColor = UIColor.darkGray
+        tableView.backgroundColor = UIColor(named: "DarkBlue")
         return tableView
     }()
 
@@ -35,12 +35,23 @@ class SeasonSelectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Season Selection"
-        view.backgroundColor = .darkGray
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+    
+        view.backgroundColor = UIColor(named: "DarkBlue")
         tableView.dataSource = self
         tableView.delegate = self
         
         configureView()
     }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        for view in self.navigationController?.navigationBar.subviews ?? [] {
+//             let subviews = view.subviews
+//             if subviews.count > 0, let label = subviews[0] as? UILabel {
+//                  label.textColor = <replace with your color>
+//             }
+//        }
+//    }
 
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -74,8 +85,8 @@ extension SeasonSelectionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.textLabel?.text = "Season \(seasons[indexPath.row].number)"
-        cell.textLabel?.textColor = .white
-        cell.backgroundColor = .darkGray
+        cell.textLabel?.textColor = UIColor(named: "Cream")
+        cell.backgroundColor = UIColor(named: "DarkestBlue")
         return cell
     }
 }

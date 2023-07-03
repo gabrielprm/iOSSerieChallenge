@@ -25,6 +25,7 @@
 		1528C0392A4F976800F060CC /* SeriesDetailsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1528C0382A4F976800F060CC /* SeriesDetailsCoordinator.swift */; };
 		1528C03B2A4F97A800F060CC /* SessionRequestProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1528C03A2A4F97A800F060CC /* SessionRequestProtocol.swift */; };
 		1528C03D2A4F9A7600F060CC /* SeriesDetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1528C03C2A4F9A7600F060CC /* SeriesDetailsModel.swift */; };
+		1576A8732A524F3F008152CD /* SeriesListPresenterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1576A8722A524F3F008152CD /* SeriesListPresenterTest.swift */; };
 		1586AB8D2A4E114900216FA6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1586AB8C2A4E114900216FA6 /* AppDelegate.swift */; };
 		1586AB8F2A4E114900216FA6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1586AB8E2A4E114900216FA6 /* SceneDelegate.swift */; };
 		1586AB942A4E114900216FA6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1586AB922A4E114900216FA6 /* Main.storyboard */; };
@@ -79,6 +80,8 @@
 		1528C0382A4F976800F060CC /* SeriesDetailsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesDetailsCoordinator.swift; sourceTree = "<group>"; };
 		1528C03A2A4F97A800F060CC /* SessionRequestProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRequestProtocol.swift; sourceTree = "<group>"; };
 		1528C03C2A4F9A7600F060CC /* SeriesDetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesDetailsModel.swift; sourceTree = "<group>"; };
+		1576A8722A524F3F008152CD /* SeriesListPresenterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesListPresenterTest.swift; sourceTree = "<group>"; };
+		1576A8752A52633E008152CD /* iOSSeriesChallenge.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; name = iOSSeriesChallenge.xctestplan; path = iOSSeriesChallengeTests/iOSSeriesChallenge.xctestplan; sourceTree = SOURCE_ROOT; };
 		1586AB892A4E114900216FA6 /* iOSSeriesChallenge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSSeriesChallenge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1586AB8C2A4E114900216FA6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1586AB8E2A4E114900216FA6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -190,6 +193,15 @@
 			path = SeriesDetails;
 			sourceTree = "<group>";
 		};
+		1576A8712A524ED8008152CD /* SerieListScene */ = {
+			isa = PBXGroup;
+			children = (
+				1576A8722A524F3F008152CD /* SeriesListPresenterTest.swift */,
+				1576A8752A52633E008152CD /* iOSSeriesChallenge.xctestplan */,
+			);
+			path = SerieListScene;
+			sourceTree = "<group>";
+		};
 		1586AB802A4E114900216FA6 = {
 			isa = PBXGroup;
 			children = (
@@ -226,6 +238,7 @@
 		1586ABA22A4E114B00216FA6 /* iOSSeriesChallengeTests */ = {
 			isa = PBXGroup;
 			children = (
+				1576A8712A524ED8008152CD /* SerieListScene */,
 				1586ABA32A4E114B00216FA6 /* iOSSeriesChallengeTests.swift */,
 			);
 			path = iOSSeriesChallengeTests;
@@ -465,6 +478,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1586ABA42A4E114B00216FA6 /* iOSSeriesChallengeTests.swift in Sources */,
+				1576A8732A524F3F008152CD /* SeriesListPresenterTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

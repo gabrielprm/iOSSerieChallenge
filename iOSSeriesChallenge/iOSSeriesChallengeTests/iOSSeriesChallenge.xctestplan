@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "14937D67-F564-4BFB-9C97-B83D20640913",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:iOSSeriesChallenge.xcodeproj",
+        "identifier" : "1586AB9E2A4E114B00216FA6",
+        "name" : "iOSSeriesChallengeTests"
+      }
+    }
+  ],
+  "version" : 1
+}

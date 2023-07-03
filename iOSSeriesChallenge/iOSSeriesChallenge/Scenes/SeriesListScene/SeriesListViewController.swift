@@ -24,7 +24,7 @@ class SeriesListViewController: UIViewController {
     
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .large)
-        activityIndicator.color = .gray
+        activityIndicator.color = .white
         activityIndicator.center = view.center
         activityIndicator.hidesWhenStopped = true
         return activityIndicator
@@ -41,7 +41,6 @@ class SeriesListViewController: UIViewController {
     lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
         collectionView.register(SeriesListCollectionViewCell.self, forCellWithReuseIdentifier: SeriesListCollectionViewCell.identifier)
-        collectionView.backgroundColor = .white
         collectionView.dataSource = self
         collectionView.delegate = self
         return collectionView
@@ -81,13 +80,17 @@ extension SeriesListViewController: SeriesListDisplaying {
     }
     
     func showLoader() {
-        activityIndicator.startAnimating()
-        view.isUserInteractionEnabled = false
+        DispatchQueue.main.async { [weak self] in
+            self?.activityIndicator.startAnimating()
+            self?.view.isUserInteractionEnabled = false
+        }
     }
     
     func hideLoader() {
-        activityIndicator.stopAnimating()
-        view.isUserInteractionEnabled = true
+        DispatchQueue.main.async { [weak self] in
+            self?.activityIndicator.stopAnimating()
+            self?.view.isUserInteractionEnabled = true
+        }
     }
 }
 

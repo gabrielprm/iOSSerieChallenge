@@ -23,6 +23,6 @@ class TwoColumnFlowLayout: UICollectionViewFlowLayout {
         self.minimumInteritemSpacing = 5
         self.minimumLineSpacing = 10
         self.sectionInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
-        self.collectionView?.backgroundColor = .darkGray
+        self.collectionView?.backgroundColor = UIColor(named: "DarkBlue")
     }
 }

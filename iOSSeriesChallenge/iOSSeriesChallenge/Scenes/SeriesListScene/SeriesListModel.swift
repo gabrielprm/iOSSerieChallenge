@@ -8,21 +8,21 @@
 import Foundation
 import UIKit
 
-struct HomeSeriesListModel: Codable {
+struct HomeSeriesListModel: Codable, Equatable {
     let _embedded: EmbeddedShow
 }
 
-struct EmbeddedShow: Codable {
+struct EmbeddedShow: Codable, Equatable {
     let show: ShowModel
 }
 
-struct ShowModel: Codable {
+struct ShowModel: Codable, Equatable {
     let id: Int
     let name: String
     let image: ShowImage?
 }
 
-struct ShowImage: Codable {
+struct ShowImage: Codable, Equatable {
     let imageUrl: String
 
     enum CodingKeys: String, CodingKey {

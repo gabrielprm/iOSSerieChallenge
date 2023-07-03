@@ -13,7 +13,7 @@ protocol SeriesDetailsPresenting {
     func fetchSeasons()
     func fetchEpisodes(seasonID: Int)
     func downloadImage(url: String, completion: @escaping (UIImage?) -> Void)
-    func removePTagsAndBoldTags(from htmlString: String) -> String
+    func removePTagsAndBoldTags(from htmlString: String?) -> String
     func presentSeasonsSelectionView(seasons: [SerieSeason], delegate: SeasonSelectionDelegate)
     func presentEpisodeDetails(episode: Episode)
 }
@@ -34,15 +34,18 @@ class SeriesDetailsPresenter: SeriesDetailsPresenting {
     }
     
     func fetchSerieDetails() {
+        viewController?.showLoader()
         service.fetchSerieDetails(id: id) { [weak self] result in
+            guard let self = self else { return }
+            self.viewController?.hideLoader()
             switch result {
             case .success(let model):
-                self?.serieTitle = model.name
-                let summary = self?.removePTagsAndBoldTags(from: model.summary)
-                guard let summary = summary else { return }
-                self?.downloadImage(url: model.image.imageUrl) { image in
+                self.serieTitle = model.name
+                let summary = self.removePTagsAndBoldTags(from: model.summary)
+                self.downloadImage(url: model.image.imageUrl) { image in
                     if let image = image {
-                        self?.viewController?.setHeaderData(image: image, title: model.name, summary: summary)
+                        self.viewController?.setHeaderData(image: image, title: model.name, summary: summary, genre: self.returnGenreArrayString(array: model.genres))
+                        self.viewController?.setSchedule(schedule: self.formatSchedule(schedule: model.schedule))
                     }
                 }
             case .failure(let error):
@@ -68,22 +71,44 @@ class SeriesDetailsPresenter: SeriesDetailsPresenting {
         }
     }
     
-    func removePTagsAndBoldTags(from htmlString: String) -> String {
-        var processedString = htmlString
+    func removePTagsAndBoldTags(from htmlString: String?) -> String {
+        guard let htmlString = htmlString else { return "" }
         
+        var processedString = htmlString
+    
         processedString = processedString.replacingOccurrences(of: "<p>", with: "")
         processedString = processedString.replacingOccurrences(of: "</p>", with: "")
         processedString = processedString.replacingOccurrences(of: "<b>", with: "")
         processedString = processedString.replacingOccurrences(of: "</b>", with: "")
-        
+          
         return processedString
+    }
+    
+    func returnGenreArrayString(array: [String]) -> String {
+        array.joined(separator: " • ")
+    }
+    
+    func formatSchedule(schedule: SerieSchedule) -> String {
+        let formattedDays = schedule.days.map { day -> String in
+            let dayPrefix = String(day.prefix(3))
+            return dayPrefix
+        }
+
+        let joinedDays = formattedDays.joined(separator: ", ")
+        var formattedString = "[\(joinedDays)]"
+
+        if !schedule.time.isEmpty {
+            formattedString += " - \(schedule.time)"
+        }
+        return formattedString
     }
     
     func fetchSeasons() {
         service.fetchAllSeasonsFromSeries(id: id) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let model):
-                self?.viewController?.presentAllSeasons(model: model)
+                self.viewController?.presentAllSeasons(model: model)
             case .failure(let error):
                 print(error)
             }
@@ -91,10 +116,13 @@ class SeriesDetailsPresenter: SeriesDetailsPresenting {
     }
     
     func fetchEpisodes(seasonID: Int) {
+        viewController?.showLoader()
         service.fetchAllEpisodesFromSeason(id: seasonID) { [weak self] result in
+            guard let self = self else { return }
+            self.viewController?.hideLoader()
             switch result {
             case .success(let model):
-                self?.viewController?.presentAllEpisodesFromSeason(episodes: model)
+                self.viewController?.presentAllEpisodesFromSeason(episodes: model)
             case .failure(let error):
                 print(error)
             }

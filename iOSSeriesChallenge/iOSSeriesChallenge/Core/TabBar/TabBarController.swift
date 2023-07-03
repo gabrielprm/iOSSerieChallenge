@@ -18,24 +18,26 @@ class CustomTabBarController: UITabBarController {
     func setupTabBar() {
         let seriesListViewController = SeriesListFactory.make()
         
-        let seriesListNavigationController = setupNavigationController(image: UIImage(systemName: "popcorn.fill"), viewController: seriesListViewController)
+        let seriesListNavigationController = setupNavigationController(title: "Series", image: UIImage(systemName: "popcorn.fill"), viewController: seriesListViewController)
         
         viewControllers = [seriesListNavigationController]
     }
     
-    func setupNavigationController(image: UIImage?, viewController: UIViewController) -> UINavigationController {
+    func setupNavigationController(title: String, image: UIImage?, viewController: UIViewController) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationController.tabBarItem.image = image
+        navigationController.tabBarItem.title = title
         return navigationController
     }
     
     func customizeTabBarAppearance() {
-        let selectedColor = UIColor.blue
-        let tabBarItemAppearance = UITabBarItem.appearance()
-        tabBarItemAppearance.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: selectedColor], for: .selected)
-        
+        let selectedColor = UIColor(named: "Cream")
+    
         let tabBarAppearance = UITabBar.appearance()
-        tabBarAppearance.barTintColor = .darkGray
         tabBarAppearance.tintColor = selectedColor
+        
+        tabBar.isTranslucent = false
+        tabBar.barTintColor = UIColor(named: "DarkBlue")
+        
     }
 }
