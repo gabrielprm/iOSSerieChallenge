@@ -7,8 +7,20 @@
 
 import UIKit
 
-class TwoColumnFlowLayout: UICollectionViewFlowLayout {
-    let numberOfColumns = 2
+final class TwoColumnFlowLayout: UICollectionViewFlowLayout {
+    
+    // MARK: - Constants
+    
+    private enum Constants {
+        static let numberOfColumns: CGFloat = 2
+        static let itemWidth: CGFloat = 15
+        static let itemHeight: CGFloat = 300
+        static let interitemSpacing: CGFloat = 5
+        static let lineSpacing: CGFloat = 10
+        static let horizontalInset: CGFloat = 15
+    }
+    
+    // MARK: - Lifecycle
     
     override func prepare() {
         super.prepare()
@@ -16,13 +28,17 @@ class TwoColumnFlowLayout: UICollectionViewFlowLayout {
         guard let collectionView = collectionView else { return }
         
         let availableWidth = collectionView.bounds.inset(by: collectionView.layoutMargins).width
-        let itemWidth = availableWidth / CGFloat(numberOfColumns)
-        let itemSize = CGSize(width: itemWidth-15, height: 300)
+        let itemWidth = (availableWidth / Constants.numberOfColumns) - Constants.itemWidth
         
-        self.itemSize = itemSize
-        self.minimumInteritemSpacing = 5
-        self.minimumLineSpacing = 10
-        self.sectionInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+        self.itemSize = CGSize(width: itemWidth, height: Constants.itemHeight)
+        self.minimumInteritemSpacing = Constants.interitemSpacing
+        self.minimumLineSpacing = Constants.lineSpacing
+        self.sectionInset = UIEdgeInsets(
+            top: 0,
+            left: Constants.horizontalInset,
+            bottom: 0,
+            right: Constants.horizontalInset
+        )
         self.collectionView?.backgroundColor = UIColor(named: "DarkBlue")
     }
 }

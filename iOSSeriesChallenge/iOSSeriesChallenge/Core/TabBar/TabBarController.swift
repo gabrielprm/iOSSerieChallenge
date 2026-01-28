@@ -7,7 +7,9 @@
 
 import UIKit
 
-class CustomTabBarController: UITabBarController {
+final class CustomTabBarController: UITabBarController {
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,29 +17,33 @@ class CustomTabBarController: UITabBarController {
         customizeTabBarAppearance()
     }
     
-    func setupTabBar() {
+    // MARK: - Private Methods
+    
+    private func setupTabBar() {
         let seriesListViewController = SeriesListFactory.make()
-        
-        let seriesListNavigationController = setupNavigationController(title: "Series", image: UIImage(systemName: "popcorn.fill"), viewController: seriesListViewController)
-        
+        let seriesListNavigationController = createNavigationController(
+            title: "Series",
+            image: UIImage(systemName: "popcorn.fill"),
+            viewController: seriesListViewController
+        )
         viewControllers = [seriesListNavigationController]
     }
     
-    func setupNavigationController(title: String, image: UIImage?, viewController: UIViewController) -> UINavigationController {
+    private func createNavigationController(
+        title: String,
+        image: UIImage?,
+        viewController: UIViewController
+    ) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationController.tabBarItem.image = image
         navigationController.tabBarItem.title = title
         return navigationController
     }
     
-    func customizeTabBarAppearance() {
+    private func customizeTabBarAppearance() {
         let selectedColor = UIColor(named: "Cream")
-    
-        let tabBarAppearance = UITabBar.appearance()
-        tabBarAppearance.tintColor = selectedColor
-        
+        UITabBar.appearance().tintColor = selectedColor
         tabBar.isTranslucent = false
         tabBar.barTintColor = UIColor(named: "DarkBlue")
-        
     }
 }

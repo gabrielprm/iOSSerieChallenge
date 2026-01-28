@@ -14,19 +14,29 @@ protocol EpisodeDetailsPresenting {
     func removePTagsAndBoldTags(from htmlString: String) -> String
 }
 
-class EpisodeDetailsPresenter: EpisodeDetailsPresenting {
-    let service: EpisodeDetailsServicing
+final class EpisodeDetailsPresenter: EpisodeDetailsPresenting {
+    
+    // MARK: - Properties
+    
+    private let service: EpisodeDetailsServicing
+    private let episode: Episode
+    private let serieTitle: String
     
     weak var viewController: EpisodeDetailsDisplaying?
     
-    let episode: Episode
-    let serieTitle: String
+    // MARK: - Initialization
     
-    init(service: EpisodeDetailsServicing, episode: Episode, serieTitle: String) {
+    init(
+        service: EpisodeDetailsServicing,
+        episode: Episode,
+        serieTitle: String
+    ) {
         self.service = service
         self.episode = episode
         self.serieTitle = serieTitle
     }
+    
+    // MARK: - EpisodeDetailsPresenting
     
     func presentData() {
         var newEpisodeData = episode
@@ -41,24 +51,24 @@ class EpisodeDetailsPresenter: EpisodeDetailsPresenting {
         }
         
         service.downloadImage(from: imageURL) { result in
-            switch result {
-            case .success(let imageData):
-                let image = UIImage(data: imageData)
-                completion(image)
-            case .failure(_):
-                completion(nil)
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let imageData):
+                    let image = UIImage(data: imageData)
+                    completion(image)
+                case .failure:
+                    completion(nil)
+                }
             }
         }
     }
     
     func removePTagsAndBoldTags(from htmlString: String) -> String {
         var processedString = htmlString
-        
         processedString = processedString.replacingOccurrences(of: "<p>", with: "")
         processedString = processedString.replacingOccurrences(of: "</p>", with: "")
         processedString = processedString.replacingOccurrences(of: "<b>", with: "")
         processedString = processedString.replacingOccurrences(of: "</b>", with: "")
-        
         return processedString
     }
 }

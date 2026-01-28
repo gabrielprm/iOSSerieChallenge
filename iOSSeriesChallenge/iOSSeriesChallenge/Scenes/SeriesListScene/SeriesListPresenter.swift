@@ -1,5 +1,5 @@
 //
-//  MovieListPresenter.swift
+//  SeriesListPresenter.swift
 //  iOSSeriesChallenge
 //
 //  Created by Gabriel do Prado Moreira on 29/06/23.
@@ -17,32 +17,55 @@ protocol SeriesListPresenting {
     func setDataToDisplay(fullData: [EmbeddedShow]) -> [EmbeddedShow]
 }
 
-class SeriesListPresenter: SeriesListPresenting {
-    let service: SeriesListServicing
-    let coordinator: SeriesListCoordinating
+final class SeriesListPresenter: SeriesListPresenting {
+    
+    // MARK: - Constants
+    
+    private enum Constants {
+        static let pageSize = 20
+    }
+    
+    // MARK: - Properties
+    
+    private let service: SeriesListServicing
+    private let coordinator: SeriesListCoordinating
+    
     weak var viewController: SeriesListDisplaying?
     
-    var allSeriesModel: [EmbeddedShow] = []
-    var currentDataIndex = 0
+    private(set) var allSeriesModel: [EmbeddedShow] = []
+    private(set) var currentDataIndex = 0
+    private var isLoading = false
     
-    init(service: SeriesListServicing, coordinator: SeriesListCoordinating) {
+    // MARK: - Initialization
+    
+    init(
+        service: SeriesListServicing,
+        coordinator: SeriesListCoordinating
+    ) {
         self.service = service
         self.coordinator = coordinator
     }
     
+    // MARK: - SeriesListPresenting
+    
     func fetchSeries() {
+        guard !isLoading else { return }
+        
         currentDataIndex = 0
+        allSeriesModel = []
+        isLoading = true
         viewController?.showLoader()
+        
         service.fetchAllSeries { [weak self] result in
             guard let self = self else { return }
+            self.isLoading = false
             self.viewController?.hideLoader()
+            
             switch result {
             case .success(let model):
-                model.forEach { serie in
-                    self.allSeriesModel.append(serie._embedded)
-                }
+                self.allSeriesModel = model.map { $0._embedded }
                 self.updateSeriesData()
-            case .failure(_):
+            case .failure:
                 break
             }
         }
@@ -55,35 +78,39 @@ class SeriesListPresenter: SeriesListPresenting {
     }
     
     func searchSerie(query: String) {
+        guard !isLoading else { return }
+        
         currentDataIndex = 0
+        allSeriesModel = []
+        isLoading = true
         viewController?.showLoader()
+        
         service.searchSeries(query: query) { [weak self] result in
             guard let self = self else { return }
+            self.isLoading = false
             self.viewController?.hideLoader()
+            
             switch result {
             case .success(let model):
                 self.allSeriesModel = model
                 self.updateSeriesData()
             case .failure(let error):
-                print(error)
+                debugPrint("Search error: \(error.errorDescription)")
             }
         }
     }
     
     func setDataToDisplay(fullData: [EmbeddedShow]) -> [EmbeddedShow] {
-        if fullData.count <= 20 {
+        guard fullData.count > Constants.pageSize else {
             return fullData
         }
         
-        let setSize = 20
-        let numberOfSets = Int(ceil(Double(fullData.count) / Double(setSize)))
+        let startIndex = currentDataIndex * Constants.pageSize
+        let endIndex = min(startIndex + Constants.pageSize, fullData.count)
         
-        let startIndex = currentDataIndex * setSize
-        let endIndex = min(startIndex + setSize, fullData.count)
-
-        let currentDataSet = fullData[startIndex..<endIndex]
+        guard startIndex < fullData.count else { return [] }
         
-        return Array(currentDataSet)
+        return Array(fullData[startIndex..<endIndex])
     }
     
     func downloadImage(url: String?, completion: @escaping (UIImage?) -> Void) {
@@ -93,17 +120,18 @@ class SeriesListPresenter: SeriesListPresenting {
         }
         
         service.downloadImage(from: imageURL) { result in
-            switch result {
-            case .success(let imageData):
-                let image = UIImage(data: imageData)
-                completion(image)
-            case .failure(_):
-                completion(nil)
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let imageData):
+                    let image = UIImage(data: imageData)
+                    completion(image)
+                case .failure:
+                    completion(nil)
+                }
             }
         }
     }
    
-    
     func navigateToDetailsPage(id: Int) {
         coordinator.openDetailsPage(id: id)
     }

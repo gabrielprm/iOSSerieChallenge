@@ -1,5 +1,5 @@
 //
-//  MovieListService.swift
+//  SeriesDetailsService.swift
 //  iOSSeriesChallenge
 //
 //  Created by Gabriel do Prado Moreira on 30/06/23.
@@ -8,108 +8,120 @@
 import Foundation
 
 protocol SeriesDetailsServicing {
-    typealias serieDetailsCompletionHandler = (Result<SerieDetails, ServiceSeriesListErrors>) -> Void
-    typealias downloadImageCompletionHandler = (Result<Data, ServiceSeriesListErrors>) -> Void
-    typealias serieSeasonsCompletionHandler = (Result<[SerieSeason], ServiceSeriesListErrors>) -> Void
-    typealias seasonEpisodesCompletionHandler = (Result<[Episode], ServiceSeriesListErrors>) -> Void
+    typealias SerieDetailsCompletionHandler = (Result<SerieDetails, ServiceSeriesListErrors>) -> Void
+    typealias DownloadImageCompletionHandler = (Result<Data, ServiceSeriesListErrors>) -> Void
+    typealias SerieSeasonsCompletionHandler = (Result<[SerieSeason], ServiceSeriesListErrors>) -> Void
+    typealias SeasonEpisodesCompletionHandler = (Result<[Episode], ServiceSeriesListErrors>) -> Void
     
-    func fetchSerieDetails(id: Int, completion: @escaping serieDetailsCompletionHandler)
-    func downloadImage(from url: URL, completion: @escaping downloadImageCompletionHandler)
-    func fetchAllSeasonsFromSeries(id: Int, completion: @escaping serieSeasonsCompletionHandler)
-    func fetchAllEpisodesFromSeason(id: Int, completion: @escaping seasonEpisodesCompletionHandler)
+    func fetchSerieDetails(id: Int, completion: @escaping SerieDetailsCompletionHandler)
+    func downloadImage(from url: URL, completion: @escaping DownloadImageCompletionHandler)
+    func fetchAllSeasonsFromSeries(id: Int, completion: @escaping SerieSeasonsCompletionHandler)
+    func fetchAllEpisodesFromSeason(id: Int, completion: @escaping SeasonEpisodesCompletionHandler)
 }
 
-class SeriesDetailsService: SeriesDetailsServicing {
+final class SeriesDetailsService: SeriesDetailsServicing {
     private let session: SessionRequest
     
     init(session: SessionRequest = URLSession.shared) {
         self.session = session
     }
     
-    func fetchSerieDetails(id: Int, completion: @escaping serieDetailsCompletionHandler) {
+    func fetchSerieDetails(id: Int, completion: @escaping SerieDetailsCompletionHandler) {
+        let urlString = "https://api.tvmaze.com/shows/\(id)"
         
-        let tvMazeUrl = "https://api.tvmaze.com/shows/\(id)"
-        
-        guard let url = URL(string: tvMazeUrl) else {
-            completion(.failure(ServiceSeriesListErrors.urlNil))
+        guard let url = URL(string: urlString) else {
+            completion(.failure(.urlNil))
             return
         }
         
-        session.dataTask(with: url) { data, response, error in
+        session.dataTask(with: url) { data, _, error in
+            if error != nil {
+                completion(.failure(.httpResponse))
+                return
+            }
+            
             guard let data = data else {
-                completion(.failure(ServiceSeriesListErrors.dataNil))
+                completion(.failure(.dataNil))
                 return
             }
             
             do {
-                let decoder = JSONDecoder()
-                let decodedData = try decoder.decode(SerieDetails.self, from: data)
+                let decodedData = try JSONDecoder().decode(SerieDetails.self, from: data)
                 completion(.success(decodedData))
-            } catch _ {
-                completion(.failure(ServiceSeriesListErrors.parseFailure))
+            } catch {
+                completion(.failure(.parseFailure))
             }
         }.resume()
     }
     
-    func downloadImage(from url: URL, completion: @escaping downloadImageCompletionHandler) {
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(.failure(ServiceSeriesListErrors.imageDownload))
+    func downloadImage(from url: URL, completion: @escaping DownloadImageCompletionHandler) {
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if error != nil {
+                completion(.failure(.imageDownload))
                 return
             }
             
-            if let data = data {
-                completion(.success(data))
-            } else {
-                completion(.failure(ServiceSeriesListErrors.imageDownload))
+            guard let data = data else {
+                completion(.failure(.imageDownload))
+                return
             }
+            
+            completion(.success(data))
         }.resume()
     }
     
-    func fetchAllSeasonsFromSeries(id: Int, completion: @escaping serieSeasonsCompletionHandler) {
-        let tvMazeUrl = "https://api.tvmaze.com/shows/\(id)/seasons"
+    func fetchAllSeasonsFromSeries(id: Int, completion: @escaping SerieSeasonsCompletionHandler) {
+        let urlString = "https://api.tvmaze.com/shows/\(id)/seasons"
         
-        guard let url = URL(string: tvMazeUrl) else {
-            completion(.failure(ServiceSeriesListErrors.urlNil))
+        guard let url = URL(string: urlString) else {
+            completion(.failure(.urlNil))
             return
         }
         
-        session.dataTask(with: url) { data, response, error in
+        session.dataTask(with: url) { data, _, error in
+            if error != nil {
+                completion(.failure(.httpResponse))
+                return
+            }
+            
             guard let data = data else {
-                completion(.failure(ServiceSeriesListErrors.dataNil))
+                completion(.failure(.dataNil))
                 return
             }
             
             do {
-                let decoder = JSONDecoder()
-                let decodedData = try decoder.decode([SerieSeason].self, from: data)
+                let decodedData = try JSONDecoder().decode([SerieSeason].self, from: data)
                 completion(.success(decodedData))
-            } catch _ {
-                completion(.failure(ServiceSeriesListErrors.parseFailure))
+            } catch {
+                completion(.failure(.parseFailure))
             }
         }.resume()
     }
     
-    func fetchAllEpisodesFromSeason(id: Int, completion: @escaping seasonEpisodesCompletionHandler) {
-        let tvMazeUrl = "https://api.tvmaze.com/seasons/\(id)/episodes"
+    func fetchAllEpisodesFromSeason(id: Int, completion: @escaping SeasonEpisodesCompletionHandler) {
+        let urlString = "https://api.tvmaze.com/seasons/\(id)/episodes"
         
-        guard let url = URL(string: tvMazeUrl) else {
-            completion(.failure(ServiceSeriesListErrors.urlNil))
+        guard let url = URL(string: urlString) else {
+            completion(.failure(.urlNil))
             return
         }
         
-        session.dataTask(with: url) { data, response, error in
+        session.dataTask(with: url) { data, _, error in
+            if error != nil {
+                completion(.failure(.httpResponse))
+                return
+            }
+            
             guard let data = data else {
-                completion(.failure(ServiceSeriesListErrors.dataNil))
+                completion(.failure(.dataNil))
                 return
             }
             
             do {
-                let decoder = JSONDecoder()
-                let decodedData = try decoder.decode([Episode].self, from: data)
+                let decodedData = try JSONDecoder().decode([Episode].self, from: data)
                 completion(.success(decodedData))
-            } catch _ {
-                completion(.failure(ServiceSeriesListErrors.parseFailure))
+            } catch {
+                completion(.failure(.parseFailure))
             }
         }.resume()
     }

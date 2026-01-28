@@ -4,7 +4,7 @@
 //
 //  Created by Gabriel do Prado Moreira on 30/06/23.
 //
-import Foundation
+
 import UIKit
 
 protocol SeriesDetailsCoordinating: AnyObject {
@@ -13,7 +13,12 @@ protocol SeriesDetailsCoordinating: AnyObject {
 }
 
 final class SeriesDetailsCoordinator: SeriesDetailsCoordinating {
+    
+    // MARK: - Properties
+    
     weak var viewController: UIViewController?
+    
+    // MARK: - SeriesDetailsCoordinating
     
     func presentSeasonsSelectionView(seasons: [SerieSeason], delegate: SeasonSelectionDelegate) {
         let seasonSelectionVC = SeasonSelectionFactory.make(seasons: seasons)

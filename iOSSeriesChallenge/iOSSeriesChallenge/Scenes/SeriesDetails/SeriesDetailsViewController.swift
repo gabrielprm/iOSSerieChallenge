@@ -1,5 +1,5 @@
 //
-//  MovieListViewController.swift
+//  SeriesDetailsViewController.swift
 //  iOSSeriesChallenge
 //
 //  Created by Gabriel do Prado Moreira on 30/06/23.
@@ -16,16 +16,33 @@ protocol SeriesDetailsDisplaying: AnyObject {
     func hideLoader()
 }
 
-class SeriesDetailsViewController: UIViewController {
-    var presenter: SeriesDetailsPresenting
-    let maxWordCount = 20
-    var isSummaryExpanded = false
+final class SeriesDetailsViewController: UIViewController {
     
-    var seasons: [SerieSeason] = []
-    var episodes: [Episode] = []
+    // MARK: - Constants
     
-    var selectedSeason: Int = 0
-    var summary: String = ""
+    private enum Constants {
+        static let maxWordCount = 20
+        static let imageHeight: CGFloat = 180
+        static let imageWidth: CGFloat = 122
+        static let topPadding: CGFloat = 20
+        static let horizontalPadding: CGFloat = 20
+        static let titleFontSize: CGFloat = 28
+        static let genreFontSize: CGFloat = 14
+        static let scheduleFontSize: CGFloat = 12
+        static let summaryFontSize: CGFloat = 14
+        static let cornerRadius: CGFloat = 10
+    }
+    
+    // MARK: - Properties
+    
+    private let presenter: SeriesDetailsPresenting
+    private var isSummaryExpanded = false
+    private var seasons: [SerieSeason] = []
+    private var episodes: [Episode] = []
+    private var selectedSeason: Int = 0
+    private var summary: String = ""
+    
+    // MARK: - UI Components
     
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .large)
@@ -35,17 +52,18 @@ class SeriesDetailsViewController: UIViewController {
         return activityIndicator
     }()
     
-    let seriesImage: UIImageView = {
-        var imageView = UIImageView()
+    private let seriesImage: UIImageView = {
+        let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = 10
+        imageView.layer.cornerRadius = Constants.cornerRadius
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
-    lazy var seriesTitle: UILabel = {
+    private lazy var seriesTitle: UILabel = {
         let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 28)
+        label.font = .boldSystemFont(ofSize: Constants.titleFontSize)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.textColor = .white
@@ -53,9 +71,9 @@ class SeriesDetailsViewController: UIViewController {
         return label
     }()
     
-    lazy var seriesGenre: UILabel = {
+    private lazy var seriesGenre: UILabel = {
         let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 14)
+        label.font = .boldSystemFont(ofSize: Constants.genreFontSize)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.textColor = .white
@@ -63,9 +81,9 @@ class SeriesDetailsViewController: UIViewController {
         return label
     }()
     
-    lazy var episodeDate: UILabel = {
+    private lazy var episodeDate: UILabel = {
         let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 12)
+        label.font = .boldSystemFont(ofSize: Constants.scheduleFontSize)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.textColor = .white
@@ -73,9 +91,9 @@ class SeriesDetailsViewController: UIViewController {
         return label
     }()
     
-    lazy var seriesSummary: UILabel = {
+    private lazy var seriesSummary: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
+        label.font = .systemFont(ofSize: Constants.summaryFontSize)
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.textColor = .white
@@ -85,7 +103,7 @@ class SeriesDetailsViewController: UIViewController {
         return label
     }()
     
-    lazy var seeMoreButton: UIButton = {
+    private lazy var seeMoreButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("See More", for: .normal)
         button.tintColor = UIColor(named: "Cream")
@@ -94,7 +112,7 @@ class SeriesDetailsViewController: UIViewController {
         return button
     }()
     
-    lazy var seeLessButton: UIButton = {
+    private lazy var seeLessButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("See Less", for: .normal)
         button.tintColor = UIColor(named: "Cream")
@@ -104,7 +122,7 @@ class SeriesDetailsViewController: UIViewController {
         return button
     }()
     
-    lazy var seasonButton: UIButton = {
+    private lazy var seasonButton: UIButton = {
         let button = UIButton(type: .system)
         let icon = UIImage(systemName: "chevron.down")
         button.tintColor = UIColor(named: "Cream")
@@ -118,13 +136,17 @@ class SeriesDetailsViewController: UIViewController {
         return button
     }()
     
-    lazy var tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(EpisodesListTableViewCell.self, forCellReuseIdentifier: EpisodesListTableViewCell.identifier)
         tableView.backgroundColor = UIColor(named: "DarkBlue")
+        tableView.dataSource = self
+        tableView.delegate = self
         return tableView
     }()
+    
+    // MARK: - Initialization
     
     init(presenter: SeriesDetailsPresenting) {
         self.presenter = presenter
@@ -135,18 +157,20 @@ class SeriesDetailsViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViews()
         setupConstraints()
         presenter.fetchSeasons()
         presenter.fetchSerieDetails()
-        tableView.dataSource = self
-        tableView.delegate = self
         view.backgroundColor = UIColor(named: "DarkBlue")
     }
     
-    func configureViews() {
+    // MARK: - Private Methods
+    
+    private func configureViews() {
         view.addSubview(seriesImage)
         view.addSubview(seriesTitle)
         view.addSubview(seriesSummary)
@@ -159,44 +183,44 @@ class SeriesDetailsViewController: UIViewController {
         view.addSubview(activityIndicator)
     }
     
-    func setupConstraints() {
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             seriesImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            seriesImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            seriesImage.heightAnchor.constraint(equalToConstant: 180),
-            seriesImage.widthAnchor.constraint(equalToConstant: 122),
+            seriesImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.topPadding),
+            seriesImage.heightAnchor.constraint(equalToConstant: Constants.imageHeight),
+            seriesImage.widthAnchor.constraint(equalToConstant: Constants.imageWidth),
             
-            seriesTitle.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            seriesTitle.topAnchor.constraint(equalTo: seriesImage.bottomAnchor, constant: 20),
+            seriesTitle.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.horizontalPadding),
+            seriesTitle.topAnchor.constraint(equalTo: seriesImage.bottomAnchor, constant: Constants.topPadding),
             seriesTitle.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             
-            seriesSummary.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            seriesSummary.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.horizontalPadding),
             seriesSummary.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             seriesSummary.topAnchor.constraint(equalTo: seriesTitle.bottomAnchor, constant: 5),
             
             seeMoreButton.topAnchor.constraint(equalTo: seriesSummary.bottomAnchor, constant: 10),
-            seeMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            seeMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.horizontalPadding),
             
             seeLessButton.topAnchor.constraint(equalTo: seriesSummary.bottomAnchor, constant: 10),
-            seeLessButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            seeLessButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.horizontalPadding),
             
             seriesGenre.topAnchor.constraint(equalTo: seeMoreButton.bottomAnchor, constant: 10),
-            seriesGenre.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            seriesGenre.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.horizontalPadding),
             
             episodeDate.topAnchor.constraint(equalTo: seriesGenre.bottomAnchor, constant: 10),
-            episodeDate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            episodeDate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Constants.horizontalPadding),
             
-            seasonButton.topAnchor.constraint(equalTo: episodeDate.bottomAnchor, constant: 20),
-            seasonButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            seasonButton.topAnchor.constraint(equalTo: episodeDate.bottomAnchor, constant: Constants.topPadding),
+            seasonButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.horizontalPadding),
         
-            tableView.topAnchor.constraint(equalTo: seasonButton.bottomAnchor, constant: 20),
-            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            tableView.topAnchor.constraint(equalTo: seasonButton.bottomAnchor, constant: Constants.topPadding),
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.horizontalPadding),
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
     
-    @objc func labelTapped() {
+    @objc private func labelTapped() {
         if isSummaryExpanded {
             seeLessButtonTapped()
         } else {
@@ -204,26 +228,26 @@ class SeriesDetailsViewController: UIViewController {
         }
     }
     
-    @objc func seeMoreButtonTapped() {
+    @objc private func seeMoreButtonTapped() {
         isSummaryExpanded = true
         updateContentLabel(with: summary)
         seeMoreButton.isHidden = true
         seeLessButton.isHidden = false
     }
     
-    @objc func seeLessButtonTapped() {
+    @objc private func seeLessButtonTapped() {
         isSummaryExpanded = false
         updateContentLabel(with: summary)
         seeMoreButton.isHidden = false
         seeLessButton.isHidden = true
     }
     
-    @objc func didTapChangeSeason() {
+    @objc private func didTapChangeSeason() {
         presenter.presentSeasonsSelectionView(seasons: seasons, delegate: self)
     }
     
-    func updateContentLabel(with text: String) {
-        if text.isEmpty {
+    private func updateContentLabel(with text: String) {
+        guard !text.isEmpty else {
             seriesSummary.isHidden = true
             seeMoreButton.isHidden = true
             seeLessButton.isHidden = true
@@ -231,32 +255,36 @@ class SeriesDetailsViewController: UIViewController {
         }
         
         let wordCount = text.components(separatedBy: .whitespacesAndNewlines).count
-        let clippedText = isSummaryExpanded ? text : clipText(text, to: maxWordCount)
+        let clippedText = isSummaryExpanded ? text : clipText(text, to: Constants.maxWordCount)
         
         let attributedString = NSMutableAttributedString(string: clippedText)
         attributedString.addAttribute(.foregroundColor, value: UIColor.white, range: NSRange(location: 0, length: clippedText.count))
-        attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 14), range: NSRange(location: 0, length: clippedText.count))
+        attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: Constants.summaryFontSize), range: NSRange(location: 0, length: clippedText.count))
         
-        if !isSummaryExpanded && wordCount > maxWordCount {
+        if !isSummaryExpanded && wordCount > Constants.maxWordCount {
             attributedString.append(NSAttributedString(string: "... "))
-            attributedString.append(seeMoreButton.attributedTitle(for: .normal) ?? NSAttributedString())
+            if let buttonTitle = seeMoreButton.attributedTitle(for: .normal) {
+                attributedString.append(buttonTitle)
+            }
         }
         
         seriesSummary.attributedText = attributedString
     }
     
-    func clipText(_ text: String, to wordCount: Int) -> String {
+    private func clipText(_ text: String, to wordCount: Int) -> String {
         let words = text.components(separatedBy: .whitespacesAndNewlines)
         let clippedWords = Array(words.prefix(wordCount))
         return clippedWords.joined(separator: " ")
     }
     
-    func updateButtonTitle(season: Int) {
+    private func updateButtonTitle(season: Int) {
         DispatchQueue.main.async { [weak self] in
             self?.seasonButton.setTitle("Season \(season)", for: .normal)
         }
     }
 }
+
+// MARK: - SeriesDetailsDisplaying
 
 extension SeriesDetailsViewController: SeriesDetailsDisplaying {
     func setHeaderData(image: UIImage, title: String, summary: String, genre: String?) {
@@ -265,13 +293,13 @@ extension SeriesDetailsViewController: SeriesDetailsDisplaying {
             self?.seriesImage.image = image
             self?.seriesTitle.text = title
             self?.updateContentLabel(with: summary)
-            if let genre = genre {
-                self?.seriesGenre.text = genre
-            }
+            self?.seriesGenre.text = genre
         }
     }
     
     func presentAllSeasons(model: [SerieSeason]) {
+        guard !model.isEmpty else { return }
+        
         self.seasons = model
         self.selectedSeason = model[0].id
         updateButtonTitle(season: model[0].number)
@@ -286,10 +314,9 @@ extension SeriesDetailsViewController: SeriesDetailsDisplaying {
     }
     
     func setSchedule(schedule: String?) {
-        if let schedule = schedule {
-            DispatchQueue.main.async { [weak self] in
-                self?.episodeDate.text = schedule
-            }
+        guard let schedule = schedule else { return }
+        DispatchQueue.main.async { [weak self] in
+            self?.episodeDate.text = schedule
         }
     }
     
@@ -308,20 +335,31 @@ extension SeriesDetailsViewController: SeriesDetailsDisplaying {
     }
 }
 
+// MARK: - UITableViewDelegate & UITableViewDataSource
+
 extension SeriesDetailsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         episodes.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: EpisodesListTableViewCell.identifier, for: indexPath) as! EpisodesListTableViewCell
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: EpisodesListTableViewCell.identifier,
+            for: indexPath
+        ) as? EpisodesListTableViewCell else {
+            return UITableViewCell()
+        }
         
-        cell.setupCell(icon: UIImage(named: "imagePlaceholder")!, episodeName: episodes[indexPath.row].name)
+        let episode = episodes[indexPath.row]
+        let placeholderImage = UIImage(named: "imagePlaceholder") ?? UIImage()
         
-        presenter.downloadImage(url: episodes[indexPath.row].image?.imageUrl ?? "") { [weak self] image in
-            if let image = image {
-                cell.setupCell(icon: image, episodeName: self?.episodes[indexPath.row].name ?? "")
-            }
+        cell.setupCell(icon: placeholderImage, episodeName: episode.name)
+        
+        presenter.downloadImage(url: episode.image?.imageUrl ?? "") { [weak self] image in
+            guard let self = self,
+                  let image = image,
+                  indexPath.row < self.episodes.count else { return }
+            cell.setupCell(icon: image, episodeName: self.episodes[indexPath.row].name)
         }
     
         return cell
@@ -332,6 +370,8 @@ extension SeriesDetailsViewController: UITableViewDelegate, UITableViewDataSourc
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
+
+// MARK: - SeasonSelectionDelegate
 
 extension SeriesDetailsViewController: SeasonSelectionDelegate {
     func selectSeason(season: SerieSeason) {

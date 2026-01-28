@@ -7,24 +7,26 @@
 
 import Foundation
 
-protocol CommomServiceProtocol {
-    typealias downloadImageCompletionHandler = (Result<Data, ServiceSeriesListErrors>) -> Void
-    func downloadImage(from url: URL, completion: @escaping downloadImageCompletionHandler)
+/// Common service protocol providing shared functionality for all services
+protocol CommonServiceProtocol {
+    typealias DownloadImageCompletionHandler = (Result<Data, ServiceSeriesListErrors>) -> Void
+    func downloadImage(from url: URL, completion: @escaping DownloadImageCompletionHandler)
 }
 
-extension CommomServiceProtocol {
-    func downloadImage(from url: URL, completion: @escaping downloadImageCompletionHandler) {
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(.failure(ServiceSeriesListErrors.imageDownload))
+extension CommonServiceProtocol {
+    func downloadImage(from url: URL, completion: @escaping DownloadImageCompletionHandler) {
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if error != nil {
+                completion(.failure(.imageDownload))
                 return
             }
             
-            if let data = data {
-                completion(.success(data))
-            } else {
-                completion(.failure(ServiceSeriesListErrors.imageDownload))
+            guard let data = data else {
+                completion(.failure(.imageDownload))
+                return
             }
+            
+            completion(.success(data))
         }.resume()
     }
 }

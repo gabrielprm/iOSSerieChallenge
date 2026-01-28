@@ -1,27 +1,44 @@
 //
-//  SeasonSelectionBottomSheet.swift
+//  SeasonSelectionViewController.swift
 //  iOSSeriesChallenge
 //
 //  Created by Gabriel do Prado Moreira on 01/07/23.
 //
 
 import UIKit
+
 protocol SeasonSelectionDelegate: AnyObject {
     func selectSeason(season: SerieSeason)
 }
 
-class SeasonSelectionViewController: UIViewController {
-    private var seasons: [SerieSeason] = []
+final class SeasonSelectionViewController: UIViewController {
     
+    // MARK: - Constants
+    
+    private enum Constants {
+        static let cellIdentifier = "SeasonCell"
+        static let topPadding: CGFloat = 20
+        static let horizontalPadding: CGFloat = 20
+    }
+    
+    // MARK: - Properties
+    
+    private let seasons: [SerieSeason]
     weak var delegate: SeasonSelectionDelegate?
+    
+    // MARK: - UI Components
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: view.bounds)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: Constants.cellIdentifier)
         tableView.backgroundColor = UIColor(named: "DarkBlue")
+        tableView.dataSource = self
+        tableView.delegate = self
         return tableView
     }()
+    
+    // MARK: - Initialization
 
     init(seasons: [SerieSeason]) {
         self.seasons = seasons
@@ -32,50 +49,50 @@ class SeasonSelectionViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Season Selection"
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-    
-        view.backgroundColor = UIColor(named: "DarkBlue")
-        tableView.dataSource = self
-        tableView.delegate = self
-        
         configureView()
+        configureNavigationBar()
     }
-    
-//    override func viewDidAppear(_ animated: Bool) {
-//        for view in self.navigationController?.navigationBar.subviews ?? [] {
-//             let subviews = view.subviews
-//             if subviews.count > 0, let label = subviews[0] as? UILabel {
-//                  label.textColor = <replace with your color>
-//             }
-//        }
-//    }
 
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         navigationController?.navigationBar.prefersLargeTitles = false
     }
     
+    // MARK: - Private Methods
+    
     private func configureView() {
-        
+        view.backgroundColor = UIColor(named: "DarkBlue")
         view.addSubview(tableView)
+        setupConstraints()
     }
     
-    func setupConstraints() {
+    private func configureNavigationBar() {
+        title = "Season Selection"
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.white
+        ]
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.topPadding),
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.horizontalPadding),
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-        
     }
 }
+
+// MARK: - UITableViewDataSource
 
 extension SeasonSelectionViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -83,7 +100,7 @@ extension SeasonSelectionViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellIdentifier, for: indexPath)
         cell.textLabel?.text = "Season \(seasons[indexPath.row].number)"
         cell.textLabel?.textColor = UIColor(named: "Cream")
         cell.backgroundColor = UIColor(named: "DarkestBlue")
@@ -91,10 +108,12 @@ extension SeasonSelectionViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
+
 extension SeasonSelectionViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         delegate?.selectSeason(season: seasons[indexPath.row])
         tableView.deselectRow(at: indexPath, animated: true)
-        self.navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)
     }
 }
